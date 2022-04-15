@@ -1,5 +1,4 @@
-# This code corresponds to Fig S17 in Alexander et al.
-# It creates Fig S1 (individual bird structure assignments and coloring 
+# This code creates Fig S1 (individual bird structure assignments and coloring 
 # site labels by “hybrid status”  in the supp. mat. of Alexander et al.
 
 # 1. Loading necessary libraries
