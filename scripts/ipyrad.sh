@@ -1,7 +1,5 @@
-# This code corresponds to Fig. S2 in Alexander et al.
-# It runs the ipyrad pipeline to assemble fastq reads
-# (available on the SRA) to the black-capped chickadee
-# reference
+# This code corresponds to Fig. S2 runs the ipyrad pipeline to assemble fastq reads
+# (available on the SRA) to the black-capped chickadee reference
 
 # THE FOLLOWING STEPS ONLY NEED TO BE RUN ONCE TO INSTALL IPYRAD 
 # Obtaining miniconda and installing it
