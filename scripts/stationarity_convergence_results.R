@@ -1,5 +1,4 @@
-# This code corresponds to Fig S7(c) in Alexander et al.
-# It analyses files from the bgc analysis represented in Fig_S7a_BGC_anslyses.sh
+# This code analyses files from the bgc analysis represented in BGC_anslyses.sh
 # (and outputs Fig 4, Table S6, and Fig S11)
 
 # 1. Loading in required libraries
@@ -418,7 +417,7 @@ chrom_output <- as_tibble(chrom_output)
 names(chrom_output) <- c("scaffold_name","total_markers","total_outlying_markers","gtest_statistic","gtest_pvalue","pos_alpha.pos_beta","neg_alpha.pos_beta","NS_alpha.pos_beta","pos_alpha.neg_beta","neg_alpha.neg_beta","NS_alpha.neg_beta","pos_alpha.NS_beta","neg_alpha.NS_beta","NS_alpha.NS_beta")
 
 # If the output table is desired, uncomment following line
-# write_csv(chrom_output,"Table_S7_outlier_by_chrom.csv")
+# write_csv(chrom_output,"outlier_by_chrom.csv")
 
 # Plotting chromosomes by numbers of markers and gtest statistic
 chrom_output <- chrom_output %>% mutate_at(vars(total_markers:NS_alpha.NS_beta),funs(as.numeric))
