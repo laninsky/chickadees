@@ -12,7 +12,7 @@ cd bgc
 # Following files need to be copied into the bgc folder
 # chickadee_ref.vcf 
 # *.snps.map or *.snpsmap from ipyrad outfiles
-# S7b_generate_bgc_inputs.R
+# generate_bgc_inputs.R
 # S7c_stationarity_convergence_results.R
 # Table_S1.txt
 
