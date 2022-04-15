@@ -1,5 +1,4 @@
-# This code corresponds to Fig S10 in Alexander et al.
-# It calcualtes statistics presented in the main results text
+# This code calculates statistics presented in the main results text
 
 # 1. Loading necessary libraries
 library(tidyverse)
