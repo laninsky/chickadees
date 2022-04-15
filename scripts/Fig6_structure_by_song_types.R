@@ -1,5 +1,4 @@
-# This code corresponds to Fig S16 in Alexander et al.
-# It creates Fig. 6 (grouping, displaying, and contrasting STRUCTURE 
+# This code creates Fig. 6 (grouping, displaying, and contrasting STRUCTURE 
 # assignments between birds of different song types) in the main manuscript 
 # of Alexander et al.
 
