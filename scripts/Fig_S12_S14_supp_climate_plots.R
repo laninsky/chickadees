@@ -1,7 +1,5 @@
-# This code corresponds to Fig 20 in Alexander et al.
-# It analyses tab files derived from the excel sheet
-# ChangeFigures.xlsx (For_Fig_S12.txt, MO_change.txt,
-# PA_change.txt). It outputs Fig S12 and S14
+# This code analyses tab files derived from the excel sheet ChangeFigures.xlsx 
+# (For_Fig_S12.txt, MO_change.txt, PA_change.txt). It outputs Fig S12 and S14
 
 # 1. Loading in required libraries
 library(tidyverse)
