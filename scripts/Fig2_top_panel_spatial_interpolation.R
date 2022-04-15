@@ -1,5 +1,4 @@
-# This code corresponds to Fig S5 in Alexander et al.
-# It creates Fig 2 (spatial interpolation of hybrid zone movement)  in the 
+# This code creates Fig 2 (spatial interpolation of hybrid zone movement) in the 
 # main manuscript of Alexander et al.
 
 # 1. Loading required libraries and scripts
