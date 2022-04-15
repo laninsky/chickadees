@@ -1,5 +1,4 @@
-# This code corresponds to Fig S15 in Alexander et al.
-# It creates Fig. 5 (plotting and calculating correlations of average 
+# This code creates Fig. 5 (plotting and calculating correlations of average 
 # assignment to black-capped chickadee genetic cluster, weight (g) and 
 # wing/tail ratio) in the main manuscript of Alexander et al.
 
