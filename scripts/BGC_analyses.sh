@@ -1,5 +1,4 @@
-# This code corresponds to Fig. S7(a) in Alexander et al.
-# It runs programs/scripts to summarize the genic regions covered
+# This code runs programs/scripts to summarize the genic regions covered
 # by the ddRADseq sequencing and generates genomic cline analyses 
 # via bgc (and outputs Fig 4, Table S6, and Fig S11) in
 # Alexander et al.
@@ -13,7 +12,7 @@ cd bgc
 # chickadee_ref.vcf 
 # *.snps.map or *.snpsmap from ipyrad outfiles
 # generate_bgc_inputs.R
-# S7c_stationarity_convergence_results.R
+# stationarity_convergence_results.R
 # Table_S1.txt
 
 #2. Downloading annotations for black-capped chickadee genome
@@ -52,7 +51,7 @@ grep -F -e "##" chickadee_ref.vcf > header_rows.txt
 # *.snps.map or *.snpsmap from ipyrad outfiles: in order to find which SNP 
 # positions correspond to each locus (in this case chickadee_ref.snpsmap )
 module load R/3.6.2-gimkl-2020a 
-Rscript Fig_S7b_generate_bgc_inputs.R
+Rscript generate_bgc_inputs.R
 
 # 3. Compiling the bgc software in bin directory
 # Obtaining the bgc tar
@@ -188,7 +187,7 @@ estpost -i mcmcout.hdf5 -o zetaest.txt -p zeta-quantile -s 0 -c 0.99999259039 -w
 estpost -i mcmcout.hdf5 -o hi.txt -p hi -s 0 -c 0.99999259039 -w 1
 
 # 7a. Checking for stationarity and convergence
-Rscript Fig_S7c_stationarity_convergence_results.R
+Rscript stationarity_convergence_results.R
 
 # Based on the stationarity/convergence results, it might be a good idea to remove additional burn-in
 # In our case, 1500 states were removed for both run1 and run2, and these are the summarized files
@@ -206,7 +205,7 @@ estpost -i mcmcout.hdf5 -o zetaest.txt -p zeta-quantile -s 0 -c 0.99999259039 -w
 estpost -i mcmcout.hdf5 -o hi.txt -p hi -s 0 -c 0.99999259039 -w 1 -b 1500
 
 # 7b. Re-checking for stationarity and convergence and presenting results
-Rscript Fig_S7c_stationarity_convergence_results.R
+Rscript stationarity_convergence_results.R
 
 # 8. Loading necessary modules for pulling out genes of interest
 module load seqtk/1.3-gimkl-2018b
