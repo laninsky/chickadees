@@ -1,6 +1,5 @@
-# This code corresponds to Fig S18 in Alexander et al.
-# It creates Fig S8 (distribution of sample depth across the 8,056 SNPs in the STRUCTURE dataset)
-# in the supplementary materials of of Alexander et al.
+# This code creates Fig S8 (distribution of sample depth across the 8,056 SNPs 
+# in the STRUCTURE dataset) in the supplementary materials of of Alexander et al.
 
 # 1. Loading required library
 library(tidyverse)
