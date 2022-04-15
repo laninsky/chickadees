@@ -1,5 +1,4 @@
-# This code corresponds to Fig. S6 in Alexander et al.
-# It creates the geographic cline component of Fig. 2 
+# This code creates the geographic cline component of Fig. 2 
 # in the main manuscript of Alexander et al.
 
 # 1. Loading required libraries and scripts
