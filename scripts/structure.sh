@@ -66,8 +66,8 @@ write_delim(output_stru,"chickadee_singleton_filtered.stru",col_names=FALSE)
 # it. mainparams (for inferring lamda) is as follows 
 # (including the hash at the beginning of the line)
 
-#define OUTFILE /nesi/nobackup/uoo00105/chickadees/structure 
-#define INFILE /nesi/nobackup/uoo00105/chickadees/structure/chickadee_singleton_filtered.stru 
+#define OUTFILE /nesi/nobackup/uoo00105/chickadees/data/structure 
+#define INFILE /nesi/nobackup/uoo00105/chickadees/data/chickadee_singleton_filtered.stru 
 #define NUMINDS 164
 #define NUMLOCI 8056 
 #define LABEL 1 
@@ -87,7 +87,7 @@ write_delim(output_stru,"chickadee_singleton_filtered.stru",col_names=FALSE)
 #define MAXPOPS 1
 #define BURNIN 50000
 #define NUMREPS 100000
-
+#define RANDOMIZE 0
 
 #define NOADMIX 0
 #define LINKAGE 0
@@ -101,7 +101,6 @@ write_delim(output_stru,"chickadee_singleton_filtered.stru",col_names=FALSE)
 #define ALPHAMAX 10.0
 #define ALPHAPROPSD 0.025
 
-
 #define INFERLAMBDA 1 
 
 #define FREQSCORR 0
@@ -112,7 +111,6 @@ write_delim(output_stru,"chickadee_singleton_filtered.stru",col_names=FALSE)
 #define ANCESTDIST 0 
 #define STARTATPOPINFO 0 
 #define METROFREQ 10
-
 
 #define UPDATEFREQ 1 
 
@@ -126,20 +124,19 @@ write_delim(output_stru,"chickadee_singleton_filtered.stru",col_names=FALSE)
 #SBATCH --ntasks 1
 #SBATCH -c 18
 #SBATCH -t 8:00:00
-#SBATCH --mem=54G
-#SBATCH -D /nesi/nobackup/uoo00105/chickadees/structure 
+#SBATCH --mem=5G
+#SBATCH -D /nesi/nobackup/uoo00105/chickadees/data
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=alana.alexander@otago.ac.nz
 #SBATCH -N 1
 #SBATCH --hint=nomultithread
-#SBATCH --partition=large
 
 module load Python/3.8.2-gimkl-2020a
 export PATH=/nesi/nobackup/uoo00105/chickadees/bin/structure_threader/bin:$PATH
 export PYTHONPATH=/nesi/nobackup/uoo00105/chickadees/bin/structure_threader/lib/python3.8/site-packages:$PYTHONPATH
 structure_threader run -K 1 -R 1 -i chickadee_singleton_filtered.stru -o infer_lambda -st /nesi/nobackup/uoo00105/chickadees/bin/structure_threader/bin/structure -t 18 --no_plots TRUE --no_tests TRUE
 
-# Lambda was inferred as  0.3710
+# Lambda was inferred as  ????
 # Mainparams for "actual" structure runs
 
 #define OUTFILE /nesi/nobackup/uoo00105/chickadees/structure/lambda_0_3710
@@ -163,7 +160,7 @@ structure_threader run -K 1 -R 1 -i chickadee_singleton_filtered.stru -o infer_l
 #define MAXPOPS 1
 #define BURNIN 50000
 #define NUMREPS 100000
-
+#define RANDOMIZE 0
 
 #define NOADMIX 0
 #define LINKAGE 0
@@ -177,21 +174,18 @@ structure_threader run -K 1 -R 1 -i chickadee_singleton_filtered.stru -o infer_l
 #define ALPHAMAX 10.0
 #define ALPHAPROPSD 0.025
 
-
 #define FREQSCORR 1 
 #define ONEFST 0
 #define FPRIORMEAN 0.01
 #define FPRIORSD 0.05
 
-
 #define INFERLAMBDA 0 
-#define LAMBDA 0.3710
+#define LAMBDA ?????
 #define COMPUTEPROB 1 
 #define PFROMPOPFLAGONLY 0 
 #define ANCESTDIST 0 
 #define STARTATPOPINFO 0 
 #define METROFREQ 10
-
 
 #define UPDATEFREQ 1
 
@@ -213,7 +207,6 @@ structure_threader run -K 1 -R 1 -i chickadee_singleton_filtered.stru -o infer_l
 #SBATCH --mail-user=alana.alexander@otago.ac.nz
 #SBATCH -N 1
 #SBATCH --hint=nomultithread
-#SBATCH --partition=large
 
 module load Python/3.8.2-gimkl-2020a
 export PATH=/nesi/nobackup/uoo00105/chickadees/bin/structure_threader/bin:$PATH
