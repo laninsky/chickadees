@@ -1,5 +1,6 @@
 # This code creates Fig S8 (distribution of sample depth across the 8,056 SNPs 
 # in the STRUCTURE dataset) in the supplementary materials of of Alexander et al.
+# It also prints to screen average missingness, reported in the main manuscript.
 
 # 1. Loading required library
 library(tidyverse)
