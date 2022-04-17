@@ -136,10 +136,10 @@ export PATH=/nesi/nobackup/uoo00105/chickadees/bin/structure_threader/bin:$PATH
 export PYTHONPATH=/nesi/nobackup/uoo00105/chickadees/bin/structure_threader/lib/python3.8/site-packages:$PYTHONPATH
 structure_threader run -K 1 -R 1 -i chickadee_singleton_filtered.stru -o infer_lambda -st /nesi/nobackup/uoo00105/chickadees/bin/structure_threader/bin/structure -t 18 --no_plots TRUE --no_tests TRUE
 
-# Lambda was inferred as  ????
+# Lambda was inferred as 0.3709
 # Mainparams for "actual" structure runs
 
-#define OUTFILE /nesi/nobackup/uoo00105/chickadees/structure/lambda_0_3710
+#define OUTFILE /nesi/nobackup/uoo00105/chickadees/structure/lambda_0_3709
 #define INFILE /nesi/nobackup/uoo00105/chickadees/structure/chickadee_singleton_filtered.stru 
 #define NUMINDS 164
 #define NUMLOCI 8056
@@ -180,7 +180,7 @@ structure_threader run -K 1 -R 1 -i chickadee_singleton_filtered.stru -o infer_l
 #define FPRIORSD 0.05
 
 #define INFERLAMBDA 0 
-#define LAMBDA ?????
+#define LAMBDA 0.3709
 #define COMPUTEPROB 1 
 #define PFROMPOPFLAGONLY 0 
 #define ANCESTDIST 0 
@@ -201,8 +201,8 @@ structure_threader run -K 1 -R 1 -i chickadee_singleton_filtered.stru -o infer_l
 #SBATCH --ntasks 1
 #SBATCH -c 18
 #SBATCH -t 72:00:00
-#SBATCH --mem=25G
-#SBATCH -D /nesi/nobackup/uoo00105/chickadees/structure 
+#SBATCH --mem=2G
+#SBATCH -D /nesi/nobackup/uoo00105/chickadees/data 
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=alana.alexander@otago.ac.nz
 #SBATCH -N 1
@@ -211,5 +211,7 @@ structure_threader run -K 1 -R 1 -i chickadee_singleton_filtered.stru -o infer_l
 module load Python/3.8.2-gimkl-2020a
 export PATH=/nesi/nobackup/uoo00105/chickadees/bin/structure_threader/bin:$PATH
 export PYTHONPATH=/nesi/nobackup/uoo00105/chickadees/bin/structure_threader/lib/python3.8/site-packages:$PYTHONPATH
-structure_threader run -K 5 -R 5 -i chickadee_singleton_filtered.stru -o results -st /nesi/nobackup/uoo00105/chickadees/bin/structure_threader/bin/structure -t 18 --no_plots TRUE --no_tests TRUE
 
+for i in `seq 1 5`;
+  do structure_threader run -K 5 -R 1 -i chickadee_singleton_filtered.stru -o results.$i -st /nesi/nobackup/uoo00105/chickadees/bin/structure_threader/bin/structure -t 18 --no_plots TRUE --no_tests TRUE;
+done
