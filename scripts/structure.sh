@@ -87,7 +87,6 @@ write_delim(output_stru,"chickadee_singleton_filtered.stru",col_names=FALSE)
 #define MAXPOPS 1
 #define BURNIN 50000
 #define NUMREPS 100000
-#define RANDOMIZE 0
 
 #define NOADMIX 0
 #define LINKAGE 0
@@ -160,7 +159,6 @@ structure_threader run -K 1 -R 1 -i chickadee_singleton_filtered.stru -o infer_l
 #define MAXPOPS 1
 #define BURNIN 50000
 #define NUMREPS 100000
-#define RANDOMIZE 0
 
 #define NOADMIX 0
 #define LINKAGE 0
@@ -190,8 +188,7 @@ structure_threader run -K 1 -R 1 -i chickadee_singleton_filtered.stru -o infer_l
 #define UPDATEFREQ 1
 
 # Sbatch for doing "actual" structure runs
-# Following code runs K1 through 5
-# Job finished in ~11 hours and didn't use more than 1GB
+# Following code runs K1 through 5, in separate directories so seeds can be different between runs
 # so those SBATCH parameters could be adjusted for future runs
 
 #!/bin/bash -e
@@ -213,5 +210,10 @@ export PATH=/nesi/nobackup/uoo00105/chickadees/bin/structure_threader/bin:$PATH
 export PYTHONPATH=/nesi/nobackup/uoo00105/chickadees/bin/structure_threader/lib/python3.8/site-packages:$PYTHONPATH
 
 for i in `seq 1 5`;
-  do structure_threader run -K 5 -R 1 -i chickadee_singleton_filtered.stru -o results.$i -st /nesi/nobackup/uoo00105/chickadees/bin/structure_threader/bin/structure -t 18 --no_plots TRUE --no_tests TRUE;
+  do mkdir results.$i;
+  cp mainparams results.$i;
+  cp extraparams results.$i;
+  cd results.$i;
+  structure_threader run -K 5 -R 1 -i /nesi/nobackup/uoo00105/chickadees/data/chickadee_singleton_filtered.stru -o results.$i -st /nesi/nobackup/uoo00105/chickadees/bin/structure_threader/bin/structure -t 18 --no_plots TRUE --no_tests TRUE;
+  cd /nesi/nobackup/uoo00105/chickadees/data;
 done
