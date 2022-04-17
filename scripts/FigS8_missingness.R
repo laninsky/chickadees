@@ -6,7 +6,7 @@
 library(tidyverse)
 
 # 2. Setwd
-setwd("chickadee/output/")
+setwd("output/")
 
 # 3. Loading in STRUCTURE  file
 temp <- read_delim("../data/chickadee_singleton_filtered.stru",delim=" ",col_names = FALSE)
@@ -39,3 +39,7 @@ ggplot() + geom_bar(data=sample_count, aes(x=No_of_samples),fill=fill_values[,2]
 
 # Saved manually as a plot 4000 pixels wide * 2000 pixels wall
 # Fig_S8_missingness.png
+
+# Average missingness
+sample_count <- sample_count %>% mutate(missing=164-No_of_samples) %>% as.tibble()
+mean(sample_count$missing)/164*100
