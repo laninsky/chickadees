@@ -10,7 +10,7 @@ library(DescTools)
 library(ggrepel)
 
 # 2. Setwd
-setwd("chickadee/output/")
+setwd("output/")
 
 # 3. Reading in additional files for context on bgc results
 genetic_map <- read_delim("../data/bgc/genetic_map.txt",col_names = FALSE,delim=" ")
@@ -143,6 +143,13 @@ combined <- combined %>% mutate(alpha=ifelse((alpha_95_LB < 0 & alpha_95_UB > 0)
 
 combined <- combined %>% mutate(beta=ifelse((beta_95_LB < 0 & beta_95_UB > 0),"Not_outlier",
                                              ifelse((beta_95_UB < 0),"Neg","Pos")))
+
+combined <- combined %>% 
+  mutate(alpha=ifelse((quantile(alpha_median, 0.99)>alpha_median & quantile(alpha_median, 0.01)<alpha_median),"Not_outlier",alpha))
+
+combined <- combined %>% 
+  mutate(beta=ifelse((quantile(beta_median, 0.99)>beta_median & quantile(beta_median, 0.01)<beta_median),"Not_outlier",beta))
+
 
 combined <- combined %>% mutate(alpha_beta=paste(alpha,beta,sep="+"))
 
@@ -508,7 +515,7 @@ ggsave("Fig_S11B_positive_beta_by_total_markers.png",width=400,height=400,units=
   ((total_pos_beta_loci/dim(reduced_combined)[1])^x)*(dim(reduced_combined)[1]-x)
   
   # Looks like 5 sig positive beta loci in a row is unlikely to happen in our dataset even once by chance
-  # (0.066 to be exact) if there is no underlying relationship between signficance and underlying genomic
+  # (6.035281e-07 to be exact) if there is no underlying relationship between signficance and underlying genomic
   # architecture (a VERY simplistic assumption!)
   
  reduced_combined <- reduced_combined %>% arrange(chromosome,kbp_pos)
@@ -551,10 +558,11 @@ output <- output %>% mutate(starting_pos=round(starting_kbp_pos*1000-1,1)) %>% m
 write_delim(output,"Table_S6_outlying_marker_bed_format.bed",col_names = FALSE)
 
 # We now wish to output a similar set of files for all of our positive beta SNPs, adding
-# 5,000 of "buffer" to be compatible with Wagner et al. (2020)
+# 25,000 of "buffer" (originally 5,000 to be compatible with Wagner et al. (2020) but reviewer
+# suggested relaxing this further
 
 output <- reduced_combined %>% filter(beta=="Pos") %>% select(chromosome,kbp_pos,scaffolds)
-output <- output %>% mutate(starting_pos=round(kbp_pos*1000-5001,1)) %>% mutate(ending_pos=round(kbp_pos*1000+500,1)) %>% select(3,4,5) %>% mutate(starting_pos=ifelse(starting_pos<0,0,starting_pos)) %>% mutate(ending_pos=ifelse(starting_pos==0,10000,ending_pos))
+output <- output %>% mutate(starting_pos=round(kbp_pos*1000-25001,1)) %>% mutate(ending_pos=round(kbp_pos*1000+25000,1)) %>% select(3,4,5) %>% mutate(starting_pos=ifelse(starting_pos<0,0,starting_pos)) %>% mutate(ending_pos=ifelse(starting_pos==0,10000,ending_pos))
 write_delim(output,"Table_S6_positive_beta_SNPs_bed_format.bed",col_names = FALSE)
 
 # We now want compare the location of our positive beta SNPs, to the outliers identified by Wagner et al. (2020) in their Table S3
@@ -567,7 +575,7 @@ output <- reduced_combined %>% filter(beta=="Pos") %>% select(chromosome,kbp_pos
 close_SNPs <- rep(NA,dim(output)[1])
 
 for (i in 1:dim(output)[1]) {
-  SNP_pos <- Wagner_data$X2[which((Wagner_data$X1==output$chromosome[i]) & (Wagner_data$X2 < (output$kbp_pos[i]+5)) & (Wagner_data$X2 > (output$kbp_pos[i]-5)))]
+  SNP_pos <- Wagner_data$X2[which((Wagner_data$X1==output$chromosome[i]) & (Wagner_data$X2 < (output$kbp_pos[i]+25)) & (Wagner_data$X2 > (output$kbp_pos[i]-25)))]
   if(length(SNP_pos)>0) {
     close_SNPs[i] <- paste(SNP_pos,collapse=",")
   }
@@ -581,33 +589,33 @@ write_delim(output,"Table_S6_positive_beta_SNPs.txt",col_names = TRUE)
 
 # What are the chances of obtaining the level of overlap in loci seen between our studies?
 # Finding the total proportion of the genome covered by the outliers from Wagner
-# Taking into account we search the 5kb on each side of the SNP
-if (Wagner_data$X2[1] < 5) {
+# Taking into account we search the 25kb on each side of the SNP
+if (Wagner_data$X2[1] < 25) {
   prop_genome_kb <- Wagner_data$X2[1]
 } else {
-  prop_genome_kb <- 5
+  prop_genome_kb <- 25
 }
 
 for (i in 2:dim(Wagner_data)[1]) {
   if(Wagner_data$X1[i-1]!=Wagner_data$X1[i]) {
-    if (Wagner_data$X2[i] < 5) {
-      prop_genome_kb <- prop_genome_kb + 5 + Wagner_data$X2[i]
+    if (Wagner_data$X2[i] < 25) {
+      prop_genome_kb <- prop_genome_kb + 25 + Wagner_data$X2[i]
     } else {
-      prop_genome_kb <-  prop_genome_kb + 5
+      prop_genome_kb <-  prop_genome_kb + 25
     }
   } else {
-    if ((Wagner_data$X2[i] - Wagner_data$X2[i-1]) < 10) {
+    if ((Wagner_data$X2[i] - Wagner_data$X2[i-1]) < 50) {
       prop_genome_kb <-  prop_genome_kb + Wagner_data$X2[i] - Wagner_data$X2[i-1]
     } else {
-      prop_genome_kb <-  prop_genome_kb + 10
+      prop_genome_kb <-  prop_genome_kb + 50
     }  
   }
 }
 
 prop_genome_covered_by_Wagner_outliers <- (prop_genome_kb*1000)/(1047.81*1000*1000)
 print(paste("Approximately ",prop_genome_covered_by_Wagner_outliers," of the chickadee genome",sep=""))
-print("is 'covered' by outliers from Wagner and their 5kbp flanking region")
-binom.test(5,671,prop_genome_covered_by_Wagner_outliers)
+print("is 'covered' by outliers from Wagner and their 25kbp flanking region")
+binom.test(0,dim(output)[1],prop_genome_covered_by_Wagner_outliers)
 
 sessionInfo()
 #R version 3.6.3 (2020-02-29)

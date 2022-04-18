@@ -57,7 +57,7 @@ Rscript generate_bgc_inputs.R
 # Obtaining the bgc tar
 wget https://sites.google.com/site/bgcsoftware/home/bgcdist1.03.tar.gz
 tar -zvxf bgcdist1.03.tar.gz
-cd 
+cd bgcdist
 # Loading required modules
 module load HDF5/1.10.5-gimkl-2018b
 module load GSL/2.4-GCC-7.4.0
@@ -176,15 +176,15 @@ bgc -a black_capped.txt -b Carolina.txt -h admixed.txt -M genetic_map.txt -O 2 -
 # Posterior point estimates and 95% ETPIs for the α and β parameters and cline parameter quantiles
 # With Bonferroni correction for 6,748 loci
 #Alpha:
-estpost -i mcmcout.hdf5 -o alphaest.txt -p alpha -s 0 -c 0.99999259039 -w 1
+estpost -i mcmcout.hdf5 -o alphaest.txt -p alpha -s 0 -c 0.95 -w 1
 #Beta
-estpost -i mcmcout.hdf5 -o betaest.txt -p beta -s 0 -c 0.99999259039 -w 1
+estpost -i mcmcout.hdf5 -o betaest.txt -p beta -s 0 -c 0.95 -w 1
 #Gamma
-estpost -i mcmcout.hdf5 -o gammaest.txt -p gamma-quantile -s 0 -c 0.99999259039 -w 1
+estpost -i mcmcout.hdf5 -o gammaest.txt -p gamma-quantile -s 0 -c 0.95 -w 1
 #Zeta
-estpost -i mcmcout.hdf5 -o zetaest.txt -p zeta-quantile -s 0 -c 0.99999259039 -w 1
+estpost -i mcmcout.hdf5 -o zetaest.txt -p zeta-quantile -s 0 -c 0.95 -w 1
 #Hi
-estpost -i mcmcout.hdf5 -o hi.txt -p hi -s 0 -c 0.99999259039 -w 1
+estpost -i mcmcout.hdf5 -o hi.txt -p hi -s 0 -c 0.95 -w 1
 
 # 7a. Checking for stationarity and convergence
 Rscript stationarity_convergence_results.R
@@ -194,15 +194,15 @@ Rscript stationarity_convergence_results.R
 # in the github repository
 
 #Alpha:
-estpost -i mcmcout.hdf5 -o alphaest.txt -p alpha -s 0 -c 0.99999259039 -w 1 -b 1500
+estpost -i mcmcout.hdf5 -o alphaest.txt -p alpha -s 0 -c 0.95 -w 1 -b 1500
 #Beta
-estpost -i mcmcout.hdf5 -o betaest.txt -p beta -s 0 -c 0.99999259039 -w 1 -b 1500
+estpost -i mcmcout.hdf5 -o betaest.txt -p beta -s 0 -c 0.95 -w 1 -b 1500
 #Gamma
-estpost -i mcmcout.hdf5 -o gammaest.txt -p gamma-quantile -s 0 -c 0.99999259039 -w 1 -b 1500
+estpost -i mcmcout.hdf5 -o gammaest.txt -p gamma-quantile -s 0 -c 0.95 -w 1 -b 1500
 #Zeta
-estpost -i mcmcout.hdf5 -o zetaest.txt -p zeta-quantile -s 0 -c 0.99999259039 -w 1 -b 1500
+estpost -i mcmcout.hdf5 -o zetaest.txt -p zeta-quantile -s 0 -c 0.95 -w 1 -b 1500
 #Hi
-estpost -i mcmcout.hdf5 -o hi.txt -p hi -s 0 -c 0.99999259039 -w 1 -b 1500
+estpost -i mcmcout.hdf5 -o hi.txt -p hi -s 0 -c 0.95 -w 1 -b 1500
 
 # 7b. Re-checking for stationarity and convergence and presenting results
 Rscript stationarity_convergence_results.R
