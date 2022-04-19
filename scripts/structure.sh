@@ -159,7 +159,7 @@ structure_threader run -K 1 -R 1 -i chickadee_singleton_filtered.stru -o infer_l
 #define MAXPOPS 1
 #define BURNIN 50000
 #define NUMREPS 100000
-#define RANDOMIZE 0
+#define RANDOMIZE 1
 #define NOADMIX 0
 #define LINKAGE 0
 #define USEPOPINFO 0
