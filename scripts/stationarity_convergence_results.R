@@ -145,11 +145,11 @@ combined <- combined %>% mutate(beta=ifelse((beta_95_LB < 0 & beta_95_UB > 0),"N
                                              ifelse((beta_95_UB < 0),"Neg","Pos")))
 
 # The following lines would filter to just the top/bottom 1% of loci
-#combined <- combined %>% 
-#  mutate(alpha=ifelse((quantile(alpha_median, 0.99)>alpha_median & quantile(alpha_median, 0.01)<alpha_median),"Not_outlier",alpha))
+combined <- combined %>% 
+  mutate(alpha=ifelse((quantile(alpha_median, 0.99)>alpha_median & quantile(alpha_median, 0.01)<alpha_median),"Not_outlier",alpha))
 
-#combined <- combined %>% 
-#  mutate(beta=ifelse((quantile(beta_median, 0.99)>beta_median & quantile(beta_median, 0.01)<beta_median),"Not_outlier",beta))
+combined <- combined %>% 
+  mutate(beta=ifelse((quantile(beta_median, 0.99)>beta_median & quantile(beta_median, 0.01)<beta_median),"Not_outlier",beta))
 
 combined <- combined %>% mutate(alpha_beta=paste(alpha,beta,sep="+"))
 
