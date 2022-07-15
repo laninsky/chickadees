@@ -144,12 +144,12 @@ combined <- combined %>% mutate(alpha=ifelse((alpha_95_LB < 0 & alpha_95_UB > 0)
 combined <- combined %>% mutate(beta=ifelse((beta_95_LB < 0 & beta_95_UB > 0),"Not_outlier",
                                              ifelse((beta_95_UB < 0),"Neg","Pos")))
 
-combined <- combined %>% 
-  mutate(alpha=ifelse((quantile(alpha_median, 0.99)>alpha_median & quantile(alpha_median, 0.01)<alpha_median),"Not_outlier",alpha))
+# The following lines would filter to just the top/bottom 1% of loci
+#combined <- combined %>% 
+#  mutate(alpha=ifelse((quantile(alpha_median, 0.99)>alpha_median & quantile(alpha_median, 0.01)<alpha_median),"Not_outlier",alpha))
 
-combined <- combined %>% 
-  mutate(beta=ifelse((quantile(beta_median, 0.99)>beta_median & quantile(beta_median, 0.01)<beta_median),"Not_outlier",beta))
-
+#combined <- combined %>% 
+#  mutate(beta=ifelse((quantile(beta_median, 0.99)>beta_median & quantile(beta_median, 0.01)<beta_median),"Not_outlier",beta))
 
 combined <- combined %>% mutate(alpha_beta=paste(alpha,beta,sep="+"))
 
@@ -223,20 +223,20 @@ Pos_Neg <- combined %>% filter(alpha_beta=="Pos+Neg")
 Neg_Neg <- combined %>% filter(alpha_beta=="Neg+Neg")
 Pos_Pos <- combined %>% filter(alpha_beta=="Pos+Pos")
 
-# Making a two by two table for testing sig difference in proportions by chromosome further down
-prob_matrix <- rbind(c(length(unique(Pos_Pos$locus_row)),length(unique(Neg_Pos$locus_row)),length(unique(Not_outlier_Pos$locus_row))),c(length(unique(Pos_Neg$locus_row)),length(unique(Neg_Neg$locus_row)),length(unique(Not_outlier_Neg$locus_row))),c(length(unique(Pos_Not_outlier$locus_row)),length(unique(Neg_Not_outlier$locus_row)),length(unique(Not_outlier_Not_outlier$locus_row))))
+# Making a three by three table for testing sig difference in proportions by chromosome further down
+prob_outlier <- (dim(genetic_map)[1]-length(unique(Not_outlier_Not_outlier$locus_row)))/dim(genetic_map)[1]
 
 # Summarizing the counts in each category. Note, no Neg+Neg or Pos+Pos observed
 combined %>% filter(hybrid_index==0) %>% group_by(alpha_beta) %>% count()
 
 ggplot() + 
   geom_line(data=Not_outlier_Not_outlier,aes(group=locus_row,x=hybrid_index,y=ancestry), color="grey50",size=1,alpha=0.5) + 
-  geom_line(data=Not_outlier_Pos,aes(group=locus_row,x=hybrid_index,y=ancestry), color="red",size=1) + 
-  geom_line(data=Not_outlier_Neg,aes(group=locus_row,x=hybrid_index,y=ancestry), color="red4",size=1) + 
-  geom_line(data=Neg_Pos,aes(group=locus_row,x=hybrid_index,y=ancestry), color="purple",size=1) + 
-  geom_line(data=Pos_Neg,aes(group=locus_row,x=hybrid_index,y=ancestry), color="purple4",size=1) + 
   geom_line(data=Pos_Not_outlier,aes(group=locus_row,x=hybrid_index,y=ancestry), color="steelblue2",size=1) + 
   geom_line(data=Neg_Not_outlier,aes(group=locus_row,x=hybrid_index,y=ancestry), color="blue",size=1) + 
+  geom_line(data=Not_outlier_Neg,aes(group=locus_row,x=hybrid_index,y=ancestry), color="red4",size=1) + 
+  geom_line(data=Pos_Neg,aes(group=locus_row,x=hybrid_index,y=ancestry), color="purple4",size=1) + 
+  geom_line(data=Neg_Pos,aes(group=locus_row,x=hybrid_index,y=ancestry), color="purple",size=1) + 
+  geom_line(data=Not_outlier_Pos,aes(group=locus_row,x=hybrid_index,y=ancestry), color="red",size=1) + 
   geom_line(data=Pos_Pos,aes(group=locus_row,x=hybrid_index,y=ancestry), color="magenta",size=1) + 
   theme_bw(base_size=33) +
   theme(legend.position = "none")  +
@@ -284,34 +284,16 @@ reduced_combined <- reduced_combined  %>% arrange(kbp_pos) %>% arrange(scaffolds
 
 # Creating an output variable with the background genome values for comparison to chromosome by chromosome
 
-chrom_output <- c("total",dim(reduced_combined)[1], (dim(reduced_combined)[1]-length(unique(Not_outlier_Not_outlier$locus_row))),NA,NA,length(unique(Pos_Pos$locus_row)),length(unique(Neg_Pos$locus_row)),length(unique(Not_outlier_Pos$locus_row)),length(unique(Pos_Neg$locus_row)),length(unique(Neg_Neg$locus_row)),length(unique(Not_outlier_Neg$locus_row)),length(unique(Pos_Not_outlier$locus_row)),length(unique(Neg_Not_outlier$locus_row)),length(unique(Not_outlier_Not_outlier$locus_row)))
+chrom_output <- c("total",dim(reduced_combined)[1], (dim(reduced_combined)[1]-length(unique(Not_outlier_Not_outlier$locus_row))),NA,length(unique(Pos_Pos$locus_row)),length(unique(Neg_Pos$locus_row)),length(unique(Not_outlier_Pos$locus_row)),length(unique(Pos_Neg$locus_row)),length(unique(Neg_Neg$locus_row)),length(unique(Not_outlier_Neg$locus_row)),length(unique(Pos_Not_outlier$locus_row)),length(unique(Neg_Not_outlier$locus_row)),length(unique(Not_outlier_Not_outlier$locus_row)))
 
 for (i in unique(reduced_combined$chromosome)) {
   tempcombined <- reduced_combined %>% filter(chromosome==i)
   
-  tempprob_matrix <- rbind(c(length(which((tempcombined$alpha_beta=="Pos+Pos")==TRUE)),length(which((tempcombined$alpha_beta=="Neg+Pos")==TRUE)),length(which((tempcombined$alpha_beta=="Not_outlier+Pos")==TRUE))),c(length(which((tempcombined$alpha_beta=="Pos+Neg")==TRUE)),length(which((tempcombined$alpha_beta=="Neg+Neg")==TRUE)),length(which((tempcombined$alpha_beta=="Not_outlier+Neg")==TRUE))),c(length(which((tempcombined$alpha_beta=="Pos+Not_outlier")==TRUE)),length(which((tempcombined$alpha_beta=="Neg+Not_outlier")==TRUE)), length(which((tempcombined$alpha_beta=="Not_outlier+Not_outlier")==TRUE))))
+  prob_test <- binom.test(x=length(which((tempcombined$alpha_beta=="Not_outlier+Not_outlier")==TRUE)),
+             n=dim(tempcombined)[1],
+             p=(1-prob_outlier))
   
-  mod_prob_matrix <- prob_matrix
-  
-  if (any(rowSums(tempprob_matrix)==0)) {
-    todel <- which(rowSums(tempprob_matrix)==0) 
-    tempprob_matrix <- tempprob_matrix[-todel,]
-    mod_prob_matrix <- mod_prob_matrix[-todel,]
-  }
-  if(!is.null(nrow(tempprob_matrix))) {
-    if (any(colSums(tempprob_matrix)==0)) {
-      todel <- which(colSums(tempprob_matrix)==0) 
-      tempprob_matrix <- tempprob_matrix[,-todel]
-      mod_prob_matrix <- mod_prob_matrix[,-todel]
-    }
-  }
-  
-  total_mod_prob_matrix <- sum(mod_prob_matrix)
-  mod_prob_matrix <- mod_prob_matrix/total_mod_prob_matrix
-  
-  gtest <- GTest(tempprob_matrix,p = mod_prob_matrix) 
-  
-  temprow <- c(i,sum(tempprob_matrix),(sum(tempprob_matrix)-length(which((tempcombined$alpha_beta=="Not_outlier+Not_outlier")==TRUE))),gtest$statistic,gtest$p.value, length(which((tempcombined$alpha_beta=="Pos+Pos")==TRUE)),length(which((tempcombined$alpha_beta=="Neg+Pos")==TRUE)),length(which((tempcombined$alpha_beta=="Not_outlier+Pos")==TRUE)),length(which((tempcombined$alpha_beta=="Pos+Neg")==TRUE)),length(which((tempcombined$alpha_beta=="Neg+Neg")==TRUE)),length(which((tempcombined$alpha_beta=="Not_outlier+Neg")==TRUE)),length(which((tempcombined$alpha_beta=="Pos+Not_outlier")==TRUE)),length(which((tempcombined$alpha_beta=="Neg+Not_outlier")==TRUE)), length(which((tempcombined$alpha_beta=="Not_outlier+Not_outlier")==TRUE)))
+  temprow <- c(i,dim(tempcombined)[1],(dim(tempcombined)[1]-length(which((tempcombined$alpha_beta=="Not_outlier+Not_outlier")==TRUE))),prob_test$p.value, length(which((tempcombined$alpha_beta=="Pos+Pos")==TRUE)),length(which((tempcombined$alpha_beta=="Neg+Pos")==TRUE)),length(which((tempcombined$alpha_beta=="Not_outlier+Pos")==TRUE)),length(which((tempcombined$alpha_beta=="Pos+Neg")==TRUE)),length(which((tempcombined$alpha_beta=="Neg+Neg")==TRUE)),length(which((tempcombined$alpha_beta=="Not_outlier+Neg")==TRUE)),length(which((tempcombined$alpha_beta=="Pos+Not_outlier")==TRUE)),length(which((tempcombined$alpha_beta=="Neg+Not_outlier")==TRUE)), length(which((tempcombined$alpha_beta=="Not_outlier+Not_outlier")==TRUE)))
     
   chrom_output <- rbind(chrom_output,temprow)
   
@@ -421,12 +403,12 @@ for (i in unique(reduced_combined$chromosome)) {
 
 chrom_output <- as_tibble(chrom_output)
 
-names(chrom_output) <- c("scaffold_name","total_markers","total_outlying_markers","gtest_statistic","gtest_pvalue","pos_alpha.pos_beta","neg_alpha.pos_beta","NS_alpha.pos_beta","pos_alpha.neg_beta","neg_alpha.neg_beta","NS_alpha.neg_beta","pos_alpha.NS_beta","neg_alpha.NS_beta","NS_alpha.NS_beta")
+names(chrom_output) <- c("scaffold_name","total_markers","total_outlying_markers","pvalue","pos_alpha.pos_beta","neg_alpha.pos_beta","NS_alpha.pos_beta","pos_alpha.neg_beta","neg_alpha.neg_beta","NS_alpha.neg_beta","pos_alpha.NS_beta","neg_alpha.NS_beta","NS_alpha.NS_beta")
 
 # If the output table is desired, uncomment following line
 # write_csv(chrom_output,"outlier_by_chrom.csv")
 
-# Plotting chromosomes by numbers of markers and gtest statistic
+# Plotting chromosomes by numbers of markers and pvalue statistic
 chrom_output <- chrom_output %>% mutate_at(vars(total_markers:NS_alpha.NS_beta),funs(as.numeric))
   
 # Pivoting our data so that we can plot by category on each of the chromosomes
@@ -476,7 +458,7 @@ chrom_output_long$name <- factor(chrom_output_long$name, levels = rev(c("NS_alph
   
   
 # Reordering based on chromosome order
-chrom_output_long$scaffold_name <- factor(chrom_output_long$scaffold_name , levels = (chrom_output_long %>% arrange(gtest_statistic) %>% select(scaffold_name) %>% unique() %>% as.matrix())[,1])
+chrom_output_long$scaffold_name <- factor(chrom_output_long$scaffold_name , levels = (chrom_output_long %>% arrange(desc(pvalue)) %>% select(scaffold_name) %>% unique() %>% as.matrix())[,1])
   
 ggplot(chrom_output_long,aes(scaffold_name)) + geom_col(aes(y=value,fill=name),position="fill",colour="black") +
     scale_fill_manual(values=point_colours) +
@@ -509,7 +491,7 @@ ggsave("Fig_S11B_positive_beta_by_total_markers.png",width=400,height=400,units=
   
   total_pos_beta_loci <- length(unique(Pos_Pos$locus_row)) + length(unique(Neg_Pos$locus_row)) + length(unique(Not_outlier_Pos$locus_row))
   
-  # Want a cut off of finding such "plug" as less than one based on our  total SNP dataset
+  # Want a cut off of finding such "plug" as less than one based on our total SNP dataset
   # Play around with x til you get what you want
   x <- 5
   ((total_pos_beta_loci/dim(reduced_combined)[1])^x)*(dim(reduced_combined)[1]-x)
@@ -615,7 +597,7 @@ for (i in 2:dim(Wagner_data)[1]) {
 prop_genome_covered_by_Wagner_outliers <- (prop_genome_kb*1000)/(1047.81*1000*1000)
 print(paste("Approximately ",prop_genome_covered_by_Wagner_outliers," of the chickadee genome",sep=""))
 print("is 'covered' by outliers from Wagner and their 25kbp flanking region")
-binom.test(0,dim(output)[1],prop_genome_covered_by_Wagner_outliers)
+binom.test(as.matrix(output %>% filter(!is.na(close_Wagner_SNPs)) %>% count())[1,1],dim(output)[1],prop_genome_covered_by_Wagner_outliers)
 
 sessionInfo()
 #R version 3.6.3 (2020-02-29)
