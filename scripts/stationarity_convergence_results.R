@@ -8,6 +8,7 @@ library(grid)
 #install.packages("DescTools")
 library(DescTools)
 library(ggrepel)
+library(scales)
 
 # 2. Setwd
 setwd("output/")
@@ -460,11 +461,12 @@ chrom_output_long$name <- factor(chrom_output_long$name, levels = rev(c("NS_alph
 # Reordering based on chromosome order
 chrom_output_long$scaffold_name <- factor(chrom_output_long$scaffold_name , levels = (chrom_output_long %>% arrange(desc(pvalue)) %>% select(scaffold_name) %>% unique() %>% as.matrix())[,1])
   
-ggplot(chrom_output_long,aes(scaffold_name)) + geom_col(aes(y=value,fill=name),position="fill",colour="black") +
+ggplot(chrom_output_long,aes(scaffold_name)) + 
+  geom_col(aes(y=value,fill=name),position="fill",colour="black") +
     scale_fill_manual(values=point_colours) +
     theme_bw(base_size = 21) +
     theme(panel.grid.major = element_blank(),panel.grid.minor = element_blank()) +
-    scale_y_continuous(name=NULL) +
+    scale_y_continuous(name=NULL,limits=c(0.75,1),oob = rescale_none) +
     theme(axis.text.x = element_text(angle = 90,hjust=1)) +
     theme(legend.position = "none") +
     scale_x_discrete(name=NULL)
