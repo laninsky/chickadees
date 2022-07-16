@@ -216,11 +216,16 @@ wget https://ftp.ncbi.nlm.nih.gov/genomes/genbank/vertebrate_other/Poecile_atric
 gunzip GCA_013398625.1_ASM1339862v1_cds_from_genomic.fna.gz
 
 # downloading magic-blast (need splice-aware method, as the nucleotide CDS we've downloaded will exclude intons)
-wget https://ftp.ncbi.nlm.nih.gov/blast/executables/magicblast/LATEST/ncbi-magicblast-1.5.0-x64-linux.tar.gz
+wget https://ftp.ncbi.nlm.nih.gov/blast/executables/magicblast/1.5.0/ncbi-magicblast-1.5.0-x64-linux.tar.gz
 tar -zvxf ncbi-magicblast-1.5.0-x64-linux.tar.gz 
 export PATH=/nesi/nobackup/uoo00105/chickadees/bin/ncbi-magicblast-1.5.0/bin:$PATH
 
 number_of_matches=`wc -l Table_S6_outlying_marker_bed_format.bed | awk '{print $1}'`
+
+# The bed file has coordinates in both kb and bp - we want bp
+cut -d" " -f1,4,5 Table_S6_outlying_marker_bed_format.bed > temp 
+mv temp Table_S6_outlying_marker_bed_format.bed
+rm temp
 
 # Outputting a list of genes found in the regions of interest (potential inversions)
 for i in `seq 1 $number_of_matches`;
@@ -239,22 +244,8 @@ done
 # Chromosome Z
 cat CM022174*gene_matches.txt | sort | uniq
 # Region by region chromosome Z
-cat CM022174.1.2.gene_matches.txt
-cat CM022174.1.3.gene_matches.txt
-cat CM022174.1.4.gene_matches.txt
-cat CM022174.1.5.gene_matches.txt
-cat CM022174.1.6.gene_matches.txt
-cat CM022174.1.7.gene_matches.txt
-cat CM022174.1.8.gene_matches.txt
-cat CM022174.1.9.gene_matches.txt
-cat CM022174.1.10.gene_matches.txt
-cat CM022174.1.11.gene_matches.txt
-
-#Chromosome 1A
-cat JAAMOC010000547.1.1.gene_matches.txt
-
-# All putative inversions
-cat *gene_matches.txt
+cat CM022174.1.1*
+cat CM022174.1.2*
 
 # Repeating a similar analysis on each of the SNPs. Creating a subfolder to hold all the data
 mkdir positive_beta_SNPs
@@ -278,7 +269,7 @@ done
 # Obtaining a list of uniq genes to run through Gene Ontology
 cat *gene_matches.txt | sort | uniq
 
-# Finding the genes that are within 5,000 bp of multiple outlying SNPs
+# Finding the genes that are within 25,000 bp of multiple outlying SNPs
 cat *gene_matches.txt | sort | uniq -c | grep -v "1 "
 
 # Getting a summary of what genes were associated with what SNPs to add to Table S6
