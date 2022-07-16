@@ -495,11 +495,11 @@ ggsave("Fig_S11B_positive_beta_by_total_markers.png",width=400,height=400,units=
   
   # Want a cut off of finding such "plug" as less than one based on our total SNP dataset
   # Play around with x til you get what you want
-  x <- 5
+  x <- 3
   ((total_pos_beta_loci/dim(reduced_combined)[1])^x)*(dim(reduced_combined)[1]-x)
   
-  # Looks like 5 sig positive beta loci in a row is unlikely to happen in our dataset even once by chance
-  # (6.035281e-07 to be exact) if there is no underlying relationship between signficance and underlying genomic
+  # Looks like 3 sig positive beta loci in a row is unlikely to happen in our dataset even once by chance
+  # (0.0063 to be exact) if there is no underlying relationship between signficance and underlying genomic
   # architecture (a VERY simplistic assumption!)
   
  reduced_combined <- reduced_combined %>% arrange(chromosome,kbp_pos)
@@ -543,7 +543,7 @@ write_delim(output,"Table_S6_outlying_marker_bed_format.bed",col_names = FALSE)
 
 # We now wish to output a similar set of files for all of our positive beta SNPs, adding
 # 25,000 of "buffer" (originally 5,000 to be compatible with Wagner et al. (2020) but reviewer
-# suggested relaxing this further
+# suggested relaxing this further)
 
 output <- reduced_combined %>% filter(beta=="Pos") %>% select(chromosome,kbp_pos,scaffolds)
 output <- output %>% mutate(starting_pos=round(kbp_pos*1000-25001,1)) %>% mutate(ending_pos=round(kbp_pos*1000+25000,1)) %>% select(3,4,5) %>% mutate(starting_pos=ifelse(starting_pos<0,0,starting_pos)) %>% mutate(ending_pos=ifelse(starting_pos==0,10000,ending_pos))
