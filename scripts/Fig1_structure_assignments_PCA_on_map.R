@@ -1,5 +1,5 @@
-# This code creates Fig S1 (individual bird structure assignments and coloring 
-# site labels by “hybrid status”  in the supp. mat. of Alexander et al.
+# This code creates Fig 1 (individual bird structure assignments and coloring 
+# site labels by “hybrid status” of Alexander et al.
 
 # 1. Loading necessary libraries
 library(tidyverse)
