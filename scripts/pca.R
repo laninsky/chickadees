@@ -62,7 +62,7 @@ samples[which(samples=="7420_")] <- "92269"
 samples[which(samples=="7421_")] <- "92270"
 
 # Pulling in Table_S1 and dropping empty final row
-tempS1 <- read_table("../data/Table_S1.txt")
+tempS1 <- read.delim("../data/Table_S1.txt", sep="\t")
 tempS1 <- tempS1[1:165,]
 # Also will drop the sample excluded from Structure analyses due to low depth
 tempS1 <- tempS1[-(which(tempS1$Catalog_number=="99788")),]
@@ -111,13 +111,36 @@ names(data) <- c("missing_data", "structure_assignments", "PC1", "PC2")
 
 # Displaying the correlations
 ggpairs(data)
+# Saved as a pdf 12 by 8 inches
 
 # Saving the PCA output
 saveRDS(pca_results, file = "../data/pca_results.rds")
 
-#
-ggplot(pca_results$pca.sample_coordinates) + geom_point(mapping=aes(x=PC1,y=PC2,colour=Group))
+# Pulling in Table_S1 and dropping empty final row
+tempS1 <- read.delim("../data/Table_S1.txt", sep="\t")
+tempS1 <- tempS1[1:165,]
 
+pc1scores <- cbind(samples,pca_results$pca.sample_coordinates)
+
+PC_cat_no <- NULL
+
+# Getting the catalog number that corresponds to each row in the PCA results
+for (i in 1:dim(pc1scores)[1]) {
+  whichcat <- c(which(tempS1$Catalog_number %in% pc1scores$samples[i]),
+    which(tempS1$Tissue_number %in% pc1scores$samples[i]))
+  tempPCcat_no <- tempS1$Catalog_number[whichcat]
+  PC_cat_no <- c(PC_cat_no,tempPCcat_no)
+}
+
+pc1scores <- cbind(PC_cat_no, pc1scores)
+
+# Joining this to Table S1
+test <- full_join(x=tempS1, y=pc1scores, by = c("Catalog_number" = "PC_cat_no"))
+# Dropping superfluous rows
+test <- test %>% select(-samples,-Group,-Class,-PC2)
+
+# Writing out Table S1
+write.table(test,"../data/Table_S1.txt",quote = FALSE,row.names= FALSE,col.names = TRUE, sep = "\t")
 
 sessionInfo()
 #R version 4.1.1 (2021-08-10)
