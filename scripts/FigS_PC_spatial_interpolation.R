@@ -1,8 +1,20 @@
-# This code creates the geographic cline component of Fig. 2 
-# in the main manuscript of Alexander et al.
+# This code creates Fig 2 (spatial interpolation of hybrid zone movement) in the 
+# main manuscript of Alexander et al.
 
 # 1. Loading required libraries and scripts
+# library(devtools)
+# Before the next step need to have openmp installed if on mac. Did this by:
+# brew install llvm
+# mkdir -p ~/.R
+# vi ~/.R/Makevars # Then inserting the following
+# C=/usr/local/opt/llvm/bin/clang
+# CXX=/usr/local/opt/llvm/bin/clang++
+# devtools::install_github("bcm-uga/TESS3_encho_sen")
 library(tidyverse)
+library(tess3r)
+library(ggrepel)
+source("http://membres-timc.imag.fr/Olivier.Francois/POPSutilities.R")
+library(fields)
 library(geosphere)
 # Download package from https://cran.r-project.org/src/contrib/Archive/hzar/hzar_0.2-5.tar.gz
 # install.packages("MCMCpack")
@@ -17,6 +29,52 @@ setwd("chickadee/output/")
 temp <- read_tsv("../data/Table_S1.txt")
 temp <- temp %>% filter(Catalog_number!="99788")
 
+# Converting PC1 to 0 to 1 scale (to use a q-score)
+PC1_range <- max(temp$PC1)-min(temp$PC1)
+temp <- temp %>% mutate(PC1_adjusted=((PC1+abs(min(temp$PC1)))/PC1_range),PC1_BC=1-PC1_adjusted)
+
+# 4. Creating variables with our variables of interest
+mod_coords <- as.matrix(temp %>% filter(Sampling_period=="MODERN") %>% filter(Included_in_tess3r=="YES") %>% dplyr::select(DecimalLongitude,DecimalLatitude))
+  
+hist_coords <- as.matrix(temp %>% filter(Sampling_period=="SMITHSONIAN") %>% filter(Included_in_tess3r=="YES") %>% dplyr::select(DecimalLongitude,DecimalLatitude))
+
+mod_q.matrix <- as.matrix(temp %>% filter(Sampling_period=="MODERN") %>% filter(Included_in_tess3r=="YES") %>% dplyr::select(PC1_BC,PC1_adjusted))
+
+hist_q.matrix <-  as.matrix(temp %>% filter(Sampling_period=="SMITHSONIAN") %>% filter(Included_in_tess3r=="YES") %>% dplyr::select(PC1_BC,PC1_adjusted))
+
+grid <- createGrid(min(mod_coords[,1],hist_coords[,1]),max(mod_coords[,1], hist_coords[,1]),min(mod_coords[,2], hist_coords[,2]),max(mod_coords[,2], hist_coords[,2]),2000,2000)
+
+# 5. Creating the base maps of interpolated genome make up
+maps(matrix = mod_q.matrix, mod_coords, grid, method = "max", colorGradientsList = list(c("gray95",brewer.pal(9,"Reds")),c("gray95",brewer.pal(9,"Blues"))))
+# Manually exported as a *.png 2000*2000 pixels in size, FigS_PCA_modern_baselayer.png in output folder
+
+maps(matrix = hist_q.matrix, hist_coords, grid, method = "max", colorGradientsList = list(c("gray95",brewer.pal(9,"Reds")),c("gray95",brewer.pal(9,"Blues"))))
+# Manually exported as a *.png 2000*2000 pixels in size, FigS_PCA_historical_baselayer.png in output folder
+
+# 6. Creating site-specific points to manually overlay on base maps
+grid <- as.data.frame(grid)
+
+modern_mymarkers <- temp %>% filter(Sampling_period=="MODERN") %>% filter(Included_in_tess3r=="YES") %>% group_by(Location_code, DecimalLongitude, DecimalLatitude) %>% 
+  summarise(BCsum=sum(PC1_BC),CCsum=sum(PC1_adjusted),max_admixture=max(min(PC1_BC,PC1_adjusted))) %>%
+  mutate(r=BCsum+CCsum,hybrid_status=ifelse(((BCsum/r)>=0.95 & max_admixture <= 0.05),"BC",ifelse(((CCsum/r)>=0.95 & max_admixture <= 0.05),"CC","Hybrid"))) 
+
+# All sampling locations look to be "hybrid" when using the transformed PC1 scores
+ggplot(grid, aes(x = grid$V1, y = grid$V2)) + geom_point(modern_mymarkers, mapping=aes(x = DecimalLongitude, y = DecimalLatitude,fill = hybrid_status), shape=21,color = "#F2B01E",size=24, stroke = 6) + scale_fill_manual(values="#9437FF") + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black")) + theme(legend.position="none") + geom_label_repel(data=modern_mymarkers, aes(x = DecimalLongitude, y = DecimalLatitude, label = modern_mymarkers$Location_code, color= hybrid_status),fill="#F2B01E",segment.size=0,size=15, force=1.5, max.iter = 40000)+scale_color_manual(values=c("#9437FF"))+
+  xlim(min(grid$V1),max(grid$V1)) +
+  ylim(min(grid$V2),max(grid$V2))
+# Manually exported as a *.png 2000*2000 pixels in size, FigSPCA_modern_overlay.png in output folder
+
+historical_mymarkers <- temp %>% filter(Sampling_period=="SMITHSONIAN") %>% filter(Included_in_tess3r=="YES") %>% group_by(Location_code, DecimalLongitude, DecimalLatitude) %>% 
+  summarise(BCsum=sum(PC1_BC),CCsum=sum(PC1_adjusted),max_admixture=max(min(BC_genetic_cluster_assignment,CC_genetic_cluster_assignment))) %>%
+  mutate(r=BCsum+CCsum,hybrid_status=ifelse(((BCsum/r)>=0.95 & max_admixture <= 0.05),"BC",ifelse(((CCsum/r)>=0.95 & max_admixture <= 0.05),"CC","Hybrid"))) 
+
+# All sampling locations look to be "hybrid" when using the transformed PC1 scores
+ggplot(grid, aes(x = grid$V1, y = grid$V2)) + geom_point(historical_mymarkers, mapping=aes(x = DecimalLongitude, y = DecimalLatitude,fill = hybrid_status), shape=21,color = "#F2B01E",size=24, stroke = 6)+scale_fill_manual(values=c("#9437FF")) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black")) + theme(legend.position="none") + geom_label_repel(data=historical_mymarkers, aes(x = DecimalLongitude, y = DecimalLatitude, label = historical_mymarkers$Location_code, color= hybrid_status),fill="#F2B01E",segment.size=0,size=15, force=1.5, max.iter = 40000)+scale_color_manual(values=c("#9437FF"))+
+  xlim(min(grid$V1),max(grid$V1)) +
+  ylim(min(grid$V2),max(grid$V2))
+# Manually exported as a *.png 2000*2000 pixels in size, FigSPCA_historical_overlay.png in output folder
+
+# Now running hzar on things:
 # 4. Creating variables with our data of interest
 mod_names <- as.matrix(temp %>% filter(Sampling_period=="MODERN") %>% filter(Included_in_tess3r=="YES") %>% dplyr::select(Catalog_number))
 
@@ -26,9 +84,9 @@ mod_coords <- as.matrix(temp %>% filter(Sampling_period=="MODERN") %>% filter(In
 
 hist_coords <- as.matrix(temp %>% filter(Sampling_period=="SMITHSONIAN") %>% filter(Included_in_tess3r=="YES") %>% dplyr::select(DecimalLongitude,DecimalLatitude))
 
-mod_q.matrix <- as.matrix(temp %>% filter(Sampling_period=="MODERN") %>% filter(Included_in_tess3r=="YES") %>% dplyr::select(BC_genetic_cluster_assignment,CC_genetic_cluster_assignment))
+mod_q.matrix <- as.matrix(temp %>% filter(Sampling_period=="MODERN") %>% filter(Included_in_tess3r=="YES") %>% dplyr::select(PC1_BC,PC1_adjusted))
 
-hist_q.matrix <-  as.matrix(temp %>% filter(Sampling_period=="SMITHSONIAN") %>% filter(Included_in_tess3r=="YES") %>% dplyr::select(BC_genetic_cluster_assignment,CC_genetic_cluster_assignment))
+hist_q.matrix <-  as.matrix(temp %>% filter(Sampling_period=="SMITHSONIAN") %>% filter(Included_in_tess3r=="YES") %>% dplyr::select(PC1_BC,PC1_adjusted))
 
 # 5. Calculating distance across the transect
 # Obtaining the coordinates to create the approximate SW-NE beginning of transect line
@@ -266,8 +324,8 @@ names(hist_conf_min_max_mean) <- c("dist","min","max","mean")
 names(mod_conf_min_max_mean) <- c("dist","min","max","mean")
 
 # Writing out the dataframes in case of needing to reload
-write.table(mod_conf_min_max_mean,"../data/hzar_mod_structure.txt",quote=FALSE,col.names=TRUE,row.names=FALSE)
-write.table(hist_conf_min_max_mean,"../data/hzar_hist_structure.txt",quote=FALSE,col.names=TRUE,row.names=FALSE)
+write.table(mod_conf_min_max_mean,"../data/hzar_mod_PCA.txt",quote=FALSE,col.names=TRUE,row.names=FALSE)
+write.table(hist_conf_min_max_mean,"../data/hzar_hist_PCA.txt",quote=FALSE,col.names=TRUE,row.names=FALSE)
 
 ggplot() +
   geom_ribbon(data=mod_conf_min_max_mean,aes(x=dist/1000,ymax = max, ymin = min),fill="grey50",color="black") +
@@ -285,9 +343,9 @@ ggplot() +
   scale_y_continuous(name="Assignment to BC genetic cluster") +
   scale_x_continuous(name="Distance along transect (km)") +
   theme(legend.position = "none")
-  
+
 # Saved manually as a plot 4000 pixels wide * 2000 pixels wall
-# Fig_2_modern_transect.png
+# FigSPCA_modern_transect_PCA.png
 
 ggplot() +
   geom_ribbon(data=hist_conf_min_max_mean,aes(x=dist/1000,ymax = max, ymin = min),fill="grey50",color="black") +
@@ -307,17 +365,17 @@ ggplot() +
   theme(legend.position = "none")
 
 # Saved manually as a plot 4000 pixels wide * 2000 pixels wall
-# Fig_2_historical_transect.png
+# FigSPCA_historical_transect.png
 
 # 9. Printing to screen some parameters of interest to report in manuscript
 results <- as_tibble(rbind(c("Center",hist_center/1000,mod_center/1000),
-c("min 95% CI Center",hist_center_min/1000,mod_center_min/1000),
-c("max 95% CI Center",hist_center_max/1000,mod_center_max/1000),
-c("Width",hist_width/1000,mod_width/1000),
-c("min 95% CI Width",hist_width_min/1000,mod_width_min/1000),
-c("max 95% CI Width",hist_width_max/1000,mod_width_max/1000),
-c("pMin",hist_pMin,mod_pMin),
-c("pMax",hist_pMax,mod_pMax)))
+                           c("min 95% CI Center",hist_center_min/1000,mod_center_min/1000),
+                           c("max 95% CI Center",hist_center_max/1000,mod_center_max/1000),
+                           c("Width",hist_width/1000,mod_width/1000),
+                           c("min 95% CI Width",hist_width_min/1000,mod_width_min/1000),
+                           c("max 95% CI Width",hist_width_max/1000,mod_width_max/1000),
+                           c("pMin",hist_pMin,mod_pMin),
+                           c("pMax",hist_pMax,mod_pMax)))
 
 names(results) <- c("Parameters","Historical","Modern")
 
@@ -340,30 +398,35 @@ sessionInfo()
 #  [1] stats     graphics  grDevices utils     datasets  methods   base     
 #
 #other attached packages:
-#  [1] hzar_0.2-5       foreach_1.5.2    MCMCpack_1.6-3   MASS_7.3-57     
-#[5] coda_0.19-4      geosphere_1.5-14 forcats_0.5.1    stringr_1.4.0   
-#[9] dplyr_1.0.9      purrr_0.3.4      readr_2.1.2      tidyr_1.2.0     
-#[13] tibble_3.1.7     ggplot2_3.3.6    tidyverse_1.3.1 
+#  [1] hzar_0.2-5         foreach_1.5.2      MCMCpack_1.6-3    
+#[4] MASS_7.3-57        coda_0.19-4        geosphere_1.5-14  
+#[7] RColorBrewer_1.1-3 fields_14.0        viridis_0.6.2     
+#[10] viridisLite_0.4.0  spam_2.9-0         ggrepel_0.9.1     
+#[13] tess3r_1.1.0       forcats_0.5.1      stringr_1.4.0     
+#[16] dplyr_1.0.9        purrr_0.3.4        readr_2.1.2       
+#[19] tidyr_1.2.0        tibble_3.1.7       ggplot2_3.3.6     
+#[22] tidyverse_1.3.1   
 #
 #loaded via a namespace (and not attached):
-#  [1] lubridate_1.8.0    lattice_0.20-45    digest_0.6.29     
-#[4] assertthat_0.2.1   utf8_1.2.2         R6_2.5.1          
-#[7] cellranger_1.1.0   backports_1.4.1    MatrixModels_0.5-0
-#[10] reprex_2.0.1       httr_1.4.3         pillar_1.7.0      
-#[13] rlang_1.0.2        readxl_1.4.0       rstudioapi_0.13   
-#[16] SparseM_1.81       Matrix_1.4-1       labeling_0.4.2    
-#[19] splines_4.2.1      bit_4.0.4          munsell_0.5.0     
-#[22] broom_0.8.0        compiler_4.2.1     modelr_0.1.8      
-#[25] pkgconfig_2.0.3    mcmc_0.9-7         tidyselect_1.1.2  
-#[28] codetools_0.2-18   fansi_1.0.3        crayon_1.5.1      
-#[31] tzdb_0.3.0         dbplyr_2.2.0       withr_2.5.0       
-#[34] grid_4.2.1         jsonlite_1.8.0     gtable_0.3.0      
-#[37] lifecycle_1.0.1    DBI_1.1.3          magrittr_2.0.3    
-#[40] scales_1.2.0       cli_3.3.0          stringi_1.7.6     
-#[43] vroom_1.5.7        farver_2.1.0       fs_1.5.2          
-#[46] sp_1.5-0           xml2_1.3.3         ellipsis_0.3.2    
-#[49] generics_0.1.2     vctrs_0.4.1        iterators_1.0.14  
-#[52] tools_4.2.1        bit64_4.0.5        glue_1.6.2        
-#[55] hms_1.1.1          parallel_4.2.1     survival_3.3-1    
-#[58] colorspace_2.0-3   rvest_1.0.2        haven_2.5.0       
-#[61] quantreg_5.93  
+#  [1] httr_1.4.3          maps_3.4.0          bit64_4.0.5        
+#[4] vroom_1.5.7         jsonlite_1.8.0      splines_4.2.1      
+#[7] dotCall64_1.0-1     modelr_0.1.8        assertthat_0.2.1   
+#[10] sp_1.5-0            cellranger_1.1.0    pillar_1.7.0       
+#[13] backports_1.4.1     lattice_0.20-45     quantreg_5.93      
+#[16] glue_1.6.2          digest_0.6.29       RcppEigen_0.3.3.9.2
+#[19] rvest_1.0.2         colorspace_2.0-3    Matrix_1.4-1       
+#[22] pkgconfig_2.0.3     broom_0.8.0         SparseM_1.81       
+#[25] haven_2.5.0         scales_1.2.0        tzdb_0.3.0         
+#[28] MatrixModels_0.5-0  farver_2.1.0        generics_0.1.2     
+#[31] ellipsis_0.3.2      withr_2.5.0         cli_3.3.0          
+#[34] survival_3.3-1      magrittr_2.0.3      crayon_1.5.1       
+#[37] readxl_1.4.0        mcmc_0.9-7          fs_1.5.2           
+#[40] fansi_1.0.3         xml2_1.3.3          tools_4.2.1        
+#[43] hms_1.1.1           lifecycle_1.0.1     munsell_0.5.0      
+#[46] reprex_2.0.1        compiler_4.2.1      rlang_1.0.2        
+#[49] grid_4.2.1          iterators_1.0.14    rstudioapi_0.13    
+#[52] labeling_0.4.2      gtable_0.3.0        codetools_0.2-18   
+#[55] DBI_1.1.3           R6_2.5.1            gridExtra_2.3      
+#[58] lubridate_1.8.0     bit_4.0.4           utf8_1.2.2         
+#[61] stringi_1.7.6       parallel_4.2.1      Rcpp_1.0.9         
+#[64] vctrs_0.4.1         dbplyr_2.2.0        tidyselect_1.1.2   

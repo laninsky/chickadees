@@ -5,7 +5,6 @@
 library(tidyverse)
 library(ggmap)
 library(ggrepel)
-library(ggsn)
 
 # 2. Setwd
 setwd("chickadee/output/")
