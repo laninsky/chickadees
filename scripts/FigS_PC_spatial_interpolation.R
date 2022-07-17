@@ -340,7 +340,7 @@ ggplot() +
   theme_bw(base_size=70) +
   theme(panel.grid.major = element_blank(),panel.grid.minor = element_blank()) +
   theme(axis.title=element_text(size=80,face="bold")) +
-  scale_y_continuous(name="Assignment to BC genetic cluster") +
+  scale_y_continuous(name="Assignment to PC1 (normalized)") +
   scale_x_continuous(name="Distance along transect (km)") +
   theme(legend.position = "none")
 
@@ -360,7 +360,7 @@ ggplot() +
   theme_bw(base_size=70) +
   theme(panel.grid.major = element_blank(),panel.grid.minor = element_blank()) +
   theme(axis.title=element_text(size=80,face="bold")) +
-  scale_y_continuous(name="Assignment to BC genetic cluster") +
+  scale_y_continuous(name="Assignment to PC1 (normalized)") +
   scale_x_continuous(name="Distance along transect (km)") +
   theme(legend.position = "none")
 
