@@ -488,12 +488,80 @@ temp <- temp %>% filter(!is.na(BC_genetic_cluster_assignment)) %>% filter(Sampli
 # Modern first
 ggplot() +
   geom_point(temp,
-             mapping=aes(x=BC_genetic_cluster_assignment,y=PC1,alpha=Sampling_period,fill=BC_genetic_cluster_assignment),shape=21,color="black",size=3) +
-  scale_x_reverse() + 
-  scale_y_reverse() +
+             mapping=aes(x=BC_genetic_cluster_assignment,y=PC1,alpha=Sampling_period,fill=BC_genetic_cluster_assignment),shape=21,color="black",size=15) +
+  scale_x_reverse(expand=c(0,0),name = "STRUCTURE assignment to black-capped cluster") + 
+  scale_y_reverse(expand=c(0,0), name = "PC1 (81.3% variance explained)") +
   scale_alpha_discrete(range=c(1,0.3)) +
-  theme(legend.position = "none") +
   scale_fill_gradient2(
     low = "#15326C", mid = "#9437FF", high="#CE1B26", midpoint = 0.5
-  )
+  ) +
+  theme_bw(base_size = 28) +
+  theme(legend.position = "none") +
+  theme(axis.title=element_text(size=36,face="bold")) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
 
+ggsave(filename="Fig1_modern_PC1_vs_structure.pdf",plot = last_plot(),width=38,height=35,units="cm")
+
+# Historical
+ggplot() +
+  geom_point(temp,
+             mapping=aes(x=BC_genetic_cluster_assignment,y=PC1,alpha=Sampling_period,fill=BC_genetic_cluster_assignment),shape=21,color="black",size=15) +
+  scale_x_reverse(expand=c(0,0),name = "STRUCTURE assignment to black-capped cluster") + 
+  scale_y_reverse(expand=c(0,0), name = "PC1 (81.3% variance explained)") +
+  scale_alpha_discrete(range=c(0.3,1)) +
+  scale_fill_gradient2(
+    low = "#15326C", mid = "#9437FF", high="#CE1B26", midpoint = 0.5
+  ) +
+  theme_bw(base_size = 28) +
+  theme(legend.position = "none") +
+  theme(axis.title=element_text(size=36,face="bold")) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+
+ggsave(filename="Fig1_historical_PC1_vs_structure.pdf",plot = last_plot(),width=38,height=35,units="cm")
+
+sessionInfo()
+#R version 4.2.1 (2022-06-23)
+#Platform: x86_64-apple-darwin17.0 (64-bit)
+#Running under: macOS Catalina 10.15.7
+
+#Matrix products: default
+#BLAS:   /System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libBLAS.dylib
+#LAPACK: /Library/Frameworks/R.framework/Versions/4.2/Resources/lib/libRlapack.dylib
+
+#locale:
+#  [1] en_NZ.UTF-8/en_NZ.UTF-8/en_NZ.UTF-8/C/en_NZ.UTF-8/en_NZ.UTF-8
+
+#attached base packages:
+#  [1] grid      stats     graphics  grDevices utils     datasets 
+#[7] methods   base     
+
+#other attached packages:
+#  [1] scales_1.2.0    ggsn_0.5.0      ggrepel_0.9.1   ggmap_3.0.0    
+#[5] forcats_0.5.1   stringr_1.4.0   dplyr_1.0.9     purrr_0.3.4    
+#[9] readr_2.1.2     tidyr_1.2.0     tibble_3.1.7    ggplot2_3.3.6  
+#[13] tidyverse_1.3.1
+
+#loaded via a namespace (and not attached):
+#  [1] Rcpp_1.0.8.3        lubridate_1.8.0     lattice_0.20-45    
+#[4] png_0.1-7           class_7.3-20        digest_0.6.29      
+#[7] assertthat_0.2.1    utf8_1.2.2          R6_2.5.1           
+#[10] cellranger_1.1.0    plyr_1.8.7          backports_1.4.1    
+#[13] reprex_2.0.1        e1071_1.7-11        httr_1.4.3         
+#[16] pillar_1.7.0        RgoogleMaps_1.4.5.3 rlang_1.0.2        
+#[19] curl_4.3.2          readxl_1.4.0        rstudioapi_0.13    
+#[22] labeling_0.4.2      foreign_0.8-82      bit_4.0.4          
+#[25] munsell_0.5.0       proxy_0.4-27        broom_0.8.0        
+#[28] compiler_4.2.1      modelr_0.1.8        pkgconfig_2.0.3    
+#[31] tidyselect_1.1.2    fansi_1.0.3         crayon_1.5.1       
+#[34] tzdb_0.3.0          dbplyr_2.2.0        withr_2.5.0        
+#[37] sf_1.0-7            bitops_1.0-7        jsonlite_1.8.0     
+#[40] gtable_0.3.0        lifecycle_1.0.1     DBI_1.1.3          
+#[43] magrittr_2.0.3      units_0.8-0         KernSmooth_2.23-20 
+#[46] vroom_1.5.7         cli_3.3.0           stringi_1.7.6      
+#[49] farver_2.1.0        fs_1.5.2            sp_1.5-0           
+#[52] xml2_1.3.3          ellipsis_0.3.2      generics_0.1.2     
+#[55] vctrs_0.4.1         rjson_0.2.21        tools_4.2.1        
+#[58] bit64_4.0.5         glue_1.6.2          hms_1.1.1          
+#[61] jpeg_0.1-9          parallel_4.2.1      colorspace_2.0-3   
+#[64] maptools_1.1-4      classInt_0.4-7      rvest_1.0.2        
+#[67] haven_2.5.0 
