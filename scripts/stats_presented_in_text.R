@@ -29,6 +29,9 @@ data <- as.data.frame(data)
 names(data) <- c("structure","population")
 wilcox.test(data$structure~data$population)
 
+mean(modern,na.rm=TRUE)
+mean(smithsonian,na.rm=TRUE)
+
 #4. Rockville genetic cluster temporal comparisons
 # Smithsonian percentages
 temp %>% filter(Sampling_period=="SMITHSONIAN") %>% filter(grepl("Rockville",Specific_locality)) %>% mutate(status=ifelse(BC_genetic_cluster_assignment>=0.95,"BC",ifelse(CC_genetic_cluster_assignment>=0.95,"CC","hybrid"))) %>% group_by(status) %>% tally() %>% mutate(perc=n/sum(n)*100)
@@ -47,6 +50,9 @@ data <- rbind(smithsonian,modern)
 data <- as.data.frame(data)
 names(data) <- c("structure","population")
 wilcox.test(data$structure~data$population)
+
+mean(modern,na.rm=TRUE)
+mean(smithsonian,na.rm=TRUE)
 
 #5. Song genetic cluster comparisons
 BCsong <- as.matrix(temp %>% filter(Song_summary=="PUREBC") %>% select(BC_genetic_cluster_assignment))[,1]
