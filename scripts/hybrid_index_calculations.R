@@ -17,6 +17,7 @@ temp <- read.data("../data/chickadee_singleton_filtered.stru", precol.headers=0,
           NUMINDS=164,NUMLOCI=8056,PLOIDY=2,POPID=0)
 
 # 4. Prepping the data: note done this "backwards" with BC = 0, CC = 1
+# Excluded the ref CC individual who did not have high assignment based on STRUCTURE
 temp_cleaned <- data.prep(data=temp$data, loci=temp$loci, sourceAbsent=FALSE,alleles=temp$alleles,
           precols=temp$precols,S0=c("3474_", "9898_"),S1=c("7420_", "7421_"),POPID.name="INDLABEL")
 

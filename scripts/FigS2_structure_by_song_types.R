@@ -1,5 +1,5 @@
-# This code creates Fig. 6 (grouping, displaying, and contrasting STRUCTURE 
-# assignments between birds of different song types) in the main manuscript 
+# This code creates Fig. S2 (grouping, displaying, and contrasting STRUCTURE 
+# assignments between birds of different song types) in supp materials 
 # of Alexander et al.
 
 # 1. Loading required library
@@ -17,7 +17,7 @@ temp <- temp %>% filter(!is.na(Song_summary))  %>% arrange(desc(BC_genetic_clust
 longtemp <- gather(temp,cluster_assignment,assignment_value,c(BC_genetic_cluster_assignment,CC_genetic_cluster_assignment)) %>% arrange(assignment_value) %>% arrange(desc(cluster_assignment)) %>% arrange(Song_summary)
 
 # 5. Creating structure plot based on "long" format and annotating Appleton City samples
-# Saving as 1000 pixels wide, preserving aspect ratio as Fig_6.png (in output folder)
+# Saving as 1000 pixels wide, preserving aspect ratio as FigS2.png (in output folder)
 ggplot(longtemp, aes(fill=cluster_assignment,y=assignment_value,x=factor(longtemp$Catalog_number,levels=as.numeric(temp$Catalog_number)))) +
   geom_bar(stat="identity",color="black",width=1) + theme (legend.position="none", axis.text = element_blank(),axis.title=element_blank(), axis.ticks = element_blank()) + scale_y_continuous(limits=c(0,1),expand = c(0, 0)) +
   theme(aspect.ratio = 1/3) +

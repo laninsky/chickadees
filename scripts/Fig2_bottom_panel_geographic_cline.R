@@ -287,7 +287,7 @@ ggplot() +
   theme(legend.position = "none")
   
 # Saved manually as a plot 4000 pixels wide * 2000 pixels wall
-# Fig_2_modern_transect.png
+# Fig2_modern_transect.png
 
 ggplot() +
   geom_ribbon(data=hist_conf_min_max_mean,aes(x=dist/1000,ymax = max, ymin = min),fill="grey50",color="black") +
@@ -307,7 +307,7 @@ ggplot() +
   theme(legend.position = "none")
 
 # Saved manually as a plot 4000 pixels wide * 2000 pixels wall
-# Fig_2_historical_transect.png
+# Fig2_historical_transect.png
 
 # 9. Printing to screen some parameters of interest to report in manuscript
 results <- as_tibble(rbind(c("Center",hist_center/1000,mod_center/1000),

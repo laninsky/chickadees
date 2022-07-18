@@ -1,5 +1,5 @@
 # This code analyses files from the bgc analysis represented in BGC_anslyses.sh
-# (and outputs Fig 4, Table S6, and Fig S11)
+# (and outputs Fig 4, Table S7, and Fig S7)
 
 # 1. Loading in required libraries
 library(tidyverse)
@@ -246,7 +246,7 @@ ggplot() +
   scale_y_continuous(name="Locus specific ancestry") +
   scale_x_continuous(name="Hybrid index") 
 
-ggsave(paste("Fig_S11A.png",sep=""),width=400,height=200,units="mm")
+ggsave(paste("FigS7A.png",sep=""),width=400,height=200,units="mm")
 
 # Light blue: positive α not overlapping with zero (non-significant β)
 # Increase in the probability of black-capped ancestry from the base
@@ -358,7 +358,7 @@ for (i in unique(reduced_combined$chromosome)) {
       theme(legend.position = "none") +
       facet_wrap (~ scaffolds, scales = "free_x")
   
-    ggsave(paste("Fig_S11_alpha_chrom_",i,".png",sep=""),width=400,height=200,units="mm")
+    ggsave(paste("FigS7_alpha_chrom_",i,".png",sep=""),width=400,height=200,units="mm")
   
     ggplot(tempcombined) + geom_line(mapping=aes(x=kbp_pos,y=beta_median)) +
       geom_point(aes(x=kbp_pos,y=beta_median, color=alpha_beta), size=7) +
@@ -371,7 +371,7 @@ for (i in unique(reduced_combined$chromosome)) {
       theme(legend.position = "none") +
       facet_wrap (~ scaffolds, scales = "free_x")
   
-    ggsave(paste("Fig_S11_beta_chrom_",i,".png",sep=""),width=400,height=200,units="mm")
+    ggsave(paste("FigS7_beta_chrom_",i,".png",sep=""),width=400,height=200,units="mm")
 
   } else {
     ggplot(tempcombined) + geom_line(mapping=aes(x=kbp_pos,y=alpha_median)) +
@@ -384,7 +384,7 @@ for (i in unique(reduced_combined$chromosome)) {
       scale_x_continuous(name="Distance along chromosome (kbp)")  +
       theme(legend.position = "none") 
     
-    ggsave(paste("Fig_S11_alpha_chrom_",i,".png",sep=""),width=400,height=200,units="mm")
+    ggsave(paste("FigS7_alpha_chrom_",i,".png",sep=""),width=400,height=200,units="mm")
     
     ggplot(tempcombined) + geom_line(mapping=aes(x=kbp_pos,y=beta_median)) +
       geom_point(aes(x=kbp_pos,y=beta_median, color=alpha_beta), size=7) +
@@ -396,7 +396,7 @@ for (i in unique(reduced_combined$chromosome)) {
       scale_x_continuous(name="Distance along chromosome (kbp)")  +
       theme(legend.position = "none") 
     
-    ggsave(paste("Fig_S11_beta_chrom_",i,".png",sep=""),width=400,height=200,units="mm")
+    ggsave(paste("FigS7_beta_chrom_",i,".png",sep=""),width=400,height=200,units="mm")
     
   }
 
@@ -471,7 +471,7 @@ ggplot(chrom_output_long,aes(scaffold_name)) +
     theme(legend.position = "none") +
     scale_x_discrete(name=NULL)
 
-ggsave("Fig_4_loci_category_chromosome.png",width=400,height=200,units="mm")
+ggsave("Fig4_loci_category_chromosome.png",width=400,height=200,units="mm")
 
 # Because of our focus on positive beta loci, we want to see what chromosomes these are found on
 pos_beta_distribution <- chrom_output %>% mutate(total_pos_beta=pos_alpha.pos_beta+neg_alpha.pos_beta+NS_alpha.pos_beta) %>% select(scaffold_name,total_markers,total_pos_beta) 
@@ -485,7 +485,7 @@ ggplot(data=pos_beta_distribution[-1,]) + geom_point(aes(x=total_pos_beta,y=tota
     theme(legend.position = "none") +
     geom_text_repel(aes(label=scaffold_name,x=total_pos_beta,y=total_markers),point.padding = 0.1,size=10)
   
-ggsave("Fig_S11B_positive_beta_by_total_markers.png",width=400,height=400,units="mm")
+ggsave("FigS7B_positive_beta_by_total_markers.png",width=400,height=400,units="mm")
   
 # Finally, we wish to identify "plugs" of consecutive loci that are positive beta outliers
 # These may be large regions (i.e. inversions) less free to introgress, or involved in 
@@ -536,10 +536,10 @@ output <- output %>%  mutate_at(vars(starting_kbp_pos:number_of_markers),funs(as
 # Filtering for things equal and above x
 output <- output %>% filter(number_of_markers>=x)
 
-write_delim(output,"Table_S6_outlying_marker_blocks.txt")
+write_delim(output,"Table_S7_outlying_marker_blocks.txt")
 
 output <- output %>% mutate(starting_pos=round(starting_kbp_pos*1000-1,1)) %>% mutate(ending_pos=round(ending_kbp_pos*1000,1)) %>% select(-1,-5)
-write_delim(output,"Table_S6_outlying_marker_bed_format.bed",col_names = FALSE)
+write_delim(output,"Table_S7_outlying_marker_bed_format.bed",col_names = FALSE)
 
 # We now wish to output a similar set of files for all of our positive beta SNPs, adding
 # 25,000 of "buffer" (originally 5,000 to be compatible with Wagner et al. (2020) but reviewer
@@ -547,7 +547,7 @@ write_delim(output,"Table_S6_outlying_marker_bed_format.bed",col_names = FALSE)
 
 output <- reduced_combined %>% filter(beta=="Pos") %>% select(chromosome,kbp_pos,scaffolds)
 output <- output %>% mutate(starting_pos=round(kbp_pos*1000-25001,1)) %>% mutate(ending_pos=round(kbp_pos*1000+25000,1)) %>% select(3,4,5) %>% mutate(starting_pos=ifelse(starting_pos<0,0,starting_pos)) %>% mutate(ending_pos=ifelse(starting_pos==0,10000,ending_pos))
-write_delim(output,"Table_S6_positive_beta_SNPs_bed_format.bed",col_names = FALSE)
+write_delim(output,"Table_S7_positive_beta_SNPs_bed_format.bed",col_names = FALSE)
 
 # We now want compare the location of our positive beta SNPs, to the outliers identified by Wagner et al. (2020) in their Table S3
 Wagner_data <- read_delim("../data/Wagner_et_al_2020_SNPs.txt",col_names = FALSE,delim ="\t")
@@ -569,7 +569,7 @@ output <- cbind(output,close_SNPs)
 output <- as_tibble(output)
 names(output) <- c("chromosome","kbp_pos","scaffold","close_Wagner_SNPs")
 
-write_delim(output,"Table_S6_positive_beta_SNPs.txt",col_names = TRUE)
+write_delim(output,"Table_S7_positive_beta_SNPs.txt",col_names = TRUE)
 
 # What are the chances of obtaining the level of overlap in loci seen between our studies?
 # Finding the total proportion of the genome covered by the outliers from Wagner
