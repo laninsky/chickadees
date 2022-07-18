@@ -58,3 +58,34 @@ CCsong <- as.matrix(temp %>% filter(Song_summary=="PURECC") %>% select(CC_geneti
 sd(CCsong)
 
 t.test(BCsong,CCsong)
+
+# Comparisons based on hybrid index: Appleton City
+smithsonian <- temp %>% filter(Sampling_period=="SMITHSONIAN") %>% 
+  filter(grepl("Appleton",Specific_locality)) %>% select(Hybrid_Index) %>% 
+  filter(!is.na(Hybrid_Index)) %>% as.vector()
+
+modern <- temp %>% filter(Sampling_period=="MODERN") %>% 
+  filter(grepl("Appleton",Specific_locality)) %>% select(Hybrid_Index) %>% 
+  filter(!is.na(Hybrid_Index)) %>% as.vector()
+
+t.test(smithsonian$Hybrid_Index,modern$Hybrid_Index)
+mean(smithsonian$Hybrid_Index)
+mean(modern$Hybrid_Index)
+
+mean(modern$Hybrid_Index)/mean(smithsonian$Hybrid_Index)
+
+# Comparisons based on hybrid index: Rockville
+smithsonian <- temp %>% filter(Sampling_period=="SMITHSONIAN") %>% 
+  filter(grepl("Rockville",Specific_locality)) %>% select(Hybrid_Index) %>% 
+  filter(!is.na(Hybrid_Index)) %>% as.vector()
+
+modern <- temp %>% filter(Sampling_period=="MODERN") %>% 
+  filter(grepl("Rockville",Specific_locality)) %>% select(Hybrid_Index) %>% 
+  filter(!is.na(Hybrid_Index)) %>% as.vector()
+
+t.test(smithsonian$Hybrid_Index,modern$Hybrid_Index)
+mean(smithsonian$Hybrid_Index)
+mean(modern$Hybrid_Index)
+
+mean(modern$Hybrid_Index)/mean(smithsonian$Hybrid_Index)
+

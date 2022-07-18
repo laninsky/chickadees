@@ -1,6 +1,6 @@
 # This code runs programs/scripts to summarize the genic regions covered
 # by the ddRADseq sequencing and generates genomic cline analyses 
-# via bgc (and outputs Fig 4, Table S6, and Fig S11) in
+# via bgc (and outputs Fig 4, Table S7, and Fig S7) in
 # Alexander et al.
 
 # 1. Getting bgc inputs together
@@ -220,16 +220,16 @@ wget https://ftp.ncbi.nlm.nih.gov/blast/executables/magicblast/1.5.0/ncbi-magicb
 tar -zvxf ncbi-magicblast-1.5.0-x64-linux.tar.gz 
 export PATH=/nesi/nobackup/uoo00105/chickadees/bin/ncbi-magicblast-1.5.0/bin:$PATH
 
-number_of_matches=`wc -l Table_S6_outlying_marker_bed_format.bed | awk '{print $1}'`
+number_of_matches=`wc -l Table_S7_outlying_marker_bed_format.bed | awk '{print $1}'`
 
 # The bed file has coordinates in both kb and bp - we want bp
-cut -d" " -f1,4,5 Table_S6_outlying_marker_bed_format.bed > temp 
-mv temp Table_S6_outlying_marker_bed_format.bed
+cut -d" " -f1,4,5 Table_S7_outlying_marker_bed_format.bed > temp 
+mv temp Table_S7_outlying_marker_bed_format.bed
 rm temp
 
 # Outputting a list of genes found in the regions of interest (potential inversions)
 for i in `seq 1 $number_of_matches`;
-  do bedline=`head -n $i Table_S6_outlying_marker_bed_format.bed | tail -n 1`;
+  do bedline=`head -n $i Table_S7_outlying_marker_bed_format.bed | tail -n 1`;
   echo $bedline > temp.bed;
   seqname=`echo $bedline | awk '{print $1}'`;
   seqtk subseq GCA_011421415.1_CUB_Patr_1.0_genomic.fna temp.bed > $seqname.$i.fa;
@@ -250,12 +250,12 @@ cat CM022174.1.2*
 # Repeating a similar analysis on each of the SNPs. Creating a subfolder to hold all the data
 mkdir positive_beta_SNPs
 cd positive_beta_SNPs
-# Place Table_S6_positive_beta_SNPs_bed_format.bed into this folder
-number_of_matches=`wc -l Table_S6_positive_beta_SNPs_bed_format.bed | awk '{print $1}'`
+# Place Table_S7_positive_beta_SNPs_bed_format.bed into this folder
+number_of_matches=`wc -l Table_S7_positive_beta_SNPs_bed_format.bed | awk '{print $1}'`
 
 # Outputting a list of genes found in the regions of interest
 for i in `seq 1 $number_of_matches`;
-  do bedline=`head -n $i Table_S6_positive_beta_SNPs_bed_format.bed | tail -n 1`;
+  do bedline=`head -n $i Table_S7_positive_beta_SNPs_bed_format.bed | tail -n 1`;
   echo $bedline > temp.bed;
   seqname=`echo $bedline | awk '{print $1}'`;
   seqtk subseq ../GCA_011421415.1_CUB_Patr_1.0_genomic.fna temp.bed > $seqname.$i.fa;
@@ -272,7 +272,7 @@ cat *gene_matches.txt | sort | uniq
 # Finding the genes that are within 25,000 bp of multiple outlying SNPs
 cat *gene_matches.txt | sort | uniq -c | grep -v "1 "
 
-# Getting a summary of what genes were associated with what SNPs to add to Table S6
+# Getting a summary of what genes were associated with what SNPs to add to Table S7
 for i in `seq 1 $number_of_matches`; 
   do filename=`echo *.$i.gene_matches.txt`;
   seqs=`cat $filename | tr '\n' '\t'`;
