@@ -1,4 +1,4 @@
-# This code generates the input files for the bgc analysis represented in BGC_anslyses.sh
+# This code generates the input files for the bgc analysis represented in BGC_analyses.sh
 
 # Necessary files 
 # headerless.vcf: to obtain chromosome, and position along chromosome
