@@ -17,7 +17,7 @@ source("http://membres-timc.imag.fr/Olivier.Francois/POPSutilities.R")
 library(fields)
 
 # 2. Setwd
-setwd("chickadee/output/")
+setwd("chickadees/output/")
 
 # 3. Reading in data (tab delimited), dropping row
 # corresponding to sample 99788 with low coverage
