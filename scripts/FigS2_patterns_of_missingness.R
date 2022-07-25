@@ -1,11 +1,11 @@
-# This script creates Fig. S4 (average number of loci recovered across the 13,366 pairwise comparisons)
+# This script creates Fig. S2 (average number of loci recovered across the 13,366 pairwise comparisons)
 # in the supplementary materials of Alexander et al.
 
 # 1. Loading required library
 library(tidyverse)
 
 # 2. Setwd
-setwd("chickadee/output/")
+setwd("chickadees/output/")
 
 # 3A. Reading in structure data (tab delimited) and standardizing names
 temp <- read.table("../data/chickadee_singleton_filtered.stru")
@@ -27,8 +27,8 @@ tempS1 <- tempS1[1:165,]
 tempS1 <- tempS1[-(which(tempS1$Catalog_number=="99788")),]
 
 # 3C. Reading in ipyrad summary, including read depth data (tab delimited)
-# This is equivalent to Table S5
-tempread <- read_tsv("../data/Table_S5.txt")
+# This is equivalent to Table S4
+tempread <- read_tsv("../data/Table_S4.txt")
 tempread[,3] <- as_tibble(gsub("_.*","",as.matrix(tempread[,3])))
 # Also will drop the sample excluded from Structure analyses due to low depth
 tempread <- tempread[-(which(tempread$Sample=="649257")),]
@@ -126,7 +126,7 @@ pairwise_comparisons <- pairwise_comparisons %>% mutate(grouped_read_depth=cut(a
 # 7. Now grouping for the first plot
 firstplot <- pairwise_comparisons %>% group_by(grouped_av_cluster,grouped_cluster_diff) %>% summarise(mean_loci=mean(overlapping_loci),num_pairs=n(),av_cluster=mean(average_cluster),av_diff=mean(abs_cluster_diff))
 
-# export as 1000 pixels width, FigS4_firstplot_main.png in output folder
+# export as 1000 pixels width, FigS2_firstplot_main.png in output folder
 firstplot_to_save <- ggplot(firstplot,aes(x=grouped_cluster_diff,y=grouped_av_cluster,fill=mean_loci)) + 
   geom_tile(color="black") + 
   scale_fill_gradientn(colors=c("royalblue3","lightseagreen","chartreuse3","greenyellow","yellow"), guide = guide_colorbar(frame.colour = "black")) + 
@@ -139,7 +139,7 @@ firstplot_to_save <- ggplot(firstplot,aes(x=grouped_cluster_diff,y=grouped_av_cl
   theme(plot.margin=unit(c(1,1,1,1),"cm"))  + 
   theme(aspect.ratio = 1)
 
-# export as 840 pixels width, 210 high, FigS4_numpairs_cluster_diff.png in output folder
+# export as 840 pixels width, 210 high, FigS2_numpairs_cluster_diff.png in output folder
 numpairsdiff <- ggplot(firstplot,aes(x=grouped_cluster_diff,y=num_pairs)) + 
   geom_bar(stat='identity', width=0.025,fill="black",color="black") + 
   theme_bw(base_size = 16) + 
@@ -148,7 +148,7 @@ numpairsdiff <- ggplot(firstplot,aes(x=grouped_cluster_diff,y=num_pairs)) +
   theme(axis.title=element_text(size=18,face="bold")) +
   theme(plot.margin=unit(c(1,1,1,1),"cm"))
 
-# export as 225 pixels width, 840 high, FigS4_numpairs_cluster_av.png in output folder
+# export as 225 pixels width, 840 high, FigS2_numpairs_cluster_av.png in output folder
 numpairsav <- ggplot(firstplot,aes(x=grouped_av_cluster,y=num_pairs)) + 
   geom_bar(stat='identity', width=0.025,fill="black",color="black") + 
   theme_bw(base_size = 16) + 
@@ -162,7 +162,7 @@ numpairsav <- ggplot(firstplot,aes(x=grouped_av_cluster,y=num_pairs)) +
 # 8. Now grouping for the second plot
 secondplot <- pairwise_comparisons %>% group_by(grouped_read_depth,grouped_cluster_diff) %>% summarise(mean_loci=mean(overlapping_loci),num_pairs=n(),av_readdepth=mean(average_read_cov),av_diff=mean(abs_cluster_diff))
 
-# export as 1000 pixels wide, FigS4_secondplot_main.png in output folder
+# export as 1000 pixels wide, FigS2_secondplot_main.png in output folder
 secondplot_to_save <- ggplot(secondplot,aes(x=grouped_cluster_diff,y=grouped_read_depth,fill=mean_loci)) + 
   geom_tile(color="black") +
   scale_fill_gradientn(colors=c("royalblue3","lightseagreen","chartreuse3","greenyellow","yellow"), guide = guide_colorbar(frame.colour = "black")) + 
@@ -175,7 +175,7 @@ secondplot_to_save <- ggplot(secondplot,aes(x=grouped_cluster_diff,y=grouped_rea
   theme(plot.margin=unit(c(1,1,1,1),"cm"))  + 
   theme(aspect.ratio = 1)
 
-# export as 210 pixels width, 840 high, FigS4_numpairs_read.png in output folder
+# export as 210 pixels width, 840 high, FigS2_numpairs_read.png in output folder
 numpairsreads <- ggplot(secondplot,aes(x=grouped_read_depth,y=num_pairs)) + 
   geom_bar(stat='identity', width=0.07,fill="black",color="black") + 
   theme_bw(base_size = 16) + 
