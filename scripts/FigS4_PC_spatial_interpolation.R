@@ -1,4 +1,4 @@
-# This code creates Fig. S6 (spatial interpolation of hybrid zone movement using HI) in the 
+# This code creates Fig. S4 (spatial interpolation of hybrid zone movement using HI) in the 
 # supp mats of Alexander et al.
 
 # 1. Loading required libraries and scripts
@@ -22,7 +22,7 @@ library(geosphere)
 library(hzar)
 
 # 2. Setwd
-setwd("chickadee/output/")
+setwd("chickadees/output/")
 
 # 3. Reading in data (tab delimited), dropping row
 # corresponding to sample 99788 with low coverage
@@ -46,10 +46,10 @@ grid <- createGrid(min(mod_coords[,1],hist_coords[,1]),max(mod_coords[,1], hist_
 
 # 5. Creating the base maps of interpolated genome make up
 maps(matrix = mod_q.matrix, mod_coords, grid, method = "max", colorGradientsList = list(c("gray95",brewer.pal(9,"Reds")),c("gray95",brewer.pal(9,"Blues"))))
-# Manually exported as a *.png 2000*2000 pixels in size, FigS6_PCA_modern_baselayer.png in output folder
+# Manually exported as a *.png 2000*2000 pixels in size, FigS4_PCA_modern_baselayer.png in output folder
 
 maps(matrix = hist_q.matrix, hist_coords, grid, method = "max", colorGradientsList = list(c("gray95",brewer.pal(9,"Reds")),c("gray95",brewer.pal(9,"Blues"))))
-# Manually exported as a *.png 2000*2000 pixels in size, FigS6_PCA_historical_baselayer.png in output folder
+# Manually exported as a *.png 2000*2000 pixels in size, FigS4_PCA_historical_baselayer.png in output folder
 
 # 6. Creating site-specific points to manually overlay on base maps
 grid <- as.data.frame(grid)
@@ -62,7 +62,7 @@ modern_mymarkers <- temp %>% filter(Sampling_period=="MODERN") %>% filter(Includ
 ggplot(grid, aes(x = grid$V1, y = grid$V2)) + geom_point(modern_mymarkers, mapping=aes(x = DecimalLongitude, y = DecimalLatitude,fill = hybrid_status), shape=21,color = "#F2B01E",size=24, stroke = 6) + scale_fill_manual(values="#9437FF") + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black")) + theme(legend.position="none") + geom_label_repel(data=modern_mymarkers, aes(x = DecimalLongitude, y = DecimalLatitude, label = modern_mymarkers$Location_code, color= hybrid_status),fill="#F2B01E",segment.size=0,size=15, force=1.5, max.iter = 40000)+scale_color_manual(values=c("#9437FF"))+
   xlim(min(grid$V1),max(grid$V1)) +
   ylim(min(grid$V2),max(grid$V2))
-# Manually exported as a *.png 2000*2000 pixels in size, FigS6_PCA_modern_overlay.png in output folder
+# Manually exported as a *.png 2000*2000 pixels in size, FigS4_PCA_modern_overlay.png in output folder
 
 historical_mymarkers <- temp %>% filter(Sampling_period=="SMITHSONIAN") %>% filter(Included_in_tess3r=="YES") %>% group_by(Location_code, DecimalLongitude, DecimalLatitude) %>% 
   summarise(BCsum=sum(PC1_BC),CCsum=sum(PC1_adjusted),max_admixture=max(min(BC_genetic_cluster_assignment,CC_genetic_cluster_assignment))) %>%
@@ -72,7 +72,7 @@ historical_mymarkers <- temp %>% filter(Sampling_period=="SMITHSONIAN") %>% filt
 ggplot(grid, aes(x = grid$V1, y = grid$V2)) + geom_point(historical_mymarkers, mapping=aes(x = DecimalLongitude, y = DecimalLatitude,fill = hybrid_status), shape=21,color = "#F2B01E",size=24, stroke = 6)+scale_fill_manual(values=c("#9437FF")) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black")) + theme(legend.position="none") + geom_label_repel(data=historical_mymarkers, aes(x = DecimalLongitude, y = DecimalLatitude, label = historical_mymarkers$Location_code, color= hybrid_status),fill="#F2B01E",segment.size=0,size=15, force=1.5, max.iter = 40000)+scale_color_manual(values=c("#9437FF"))+
   xlim(min(grid$V1),max(grid$V1)) +
   ylim(min(grid$V2),max(grid$V2))
-# Manually exported as a *.png 2000*2000 pixels in size, FigS6_PCA_historical_overlay.png in output folder
+# Manually exported as a *.png 2000*2000 pixels in size, FigS4_PCA_historical_overlay.png in output folder
 
 # Now running hzar on things:
 # 4. Creating variables with our data of interest
@@ -345,7 +345,7 @@ ggplot() +
   theme(legend.position = "none")
 
 # Saved manually as a plot 4000 pixels wide * 2000 pixels wall
-# FigS6_PCA_modern_transect.png
+# FigS4_PCA_modern_transect.png
 
 ggplot() +
   geom_ribbon(data=hist_conf_min_max_mean,aes(x=dist/1000,ymax = max, ymin = min),fill="grey50",color="black") +
@@ -365,7 +365,7 @@ ggplot() +
   theme(legend.position = "none")
 
 # Saved manually as a plot 4000 pixels wide * 2000 pixels wall
-# FigS6_PCA_historical_transect.png
+# FigS4_PCA_historical_transect.png
 
 # 9. Printing to screen some parameters of interest to report in manuscript
 results <- as_tibble(rbind(c("Center",hist_center/1000,mod_center/1000),
