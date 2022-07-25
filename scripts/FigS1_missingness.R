@@ -1,4 +1,4 @@
-# This code creates Fig S3 (distribution of sample depth across the 8,056 SNPs 
+# This code creates Fig S1 (distribution of sample depth across the 8,056 SNPs 
 # in the STRUCTURE dataset) in the supplementary materials of of Alexander et al.
 # It also prints to screen average missingness, reported in the main manuscript.
 
@@ -38,7 +38,7 @@ ggplot() + geom_bar(data=sample_count, aes(x=No_of_samples),fill=fill_values[,2]
   theme(axis.title=element_text(size=80,face="bold"))
 
 # Saved manually as a plot 4000 pixels wide * 2000 pixels wall
-# FigS3_missingness.png
+# FigS1_missingness.png
 
 # Average missingness
 sample_count <- sample_count %>% mutate(missing=164-No_of_samples) %>% as.tibble()
