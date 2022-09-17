@@ -481,42 +481,43 @@ historicallong + scale_y_reverse()
 # Exporting as 1500 pixels height, Fig_S1_modern_lat_sites.png
 #modernlat
 
+# Removing the PC1 plots from the manuscript
 # Now making the PC1 vs BC_cluster assignment plots
-temp <- temp %>% filter(!is.na(BC_genetic_cluster_assignment)) %>% filter(Sampling_period %in% c("MODERN","SMITHSONIAN"))
+#temp <- temp %>% filter(!is.na(BC_genetic_cluster_assignment)) %>% filter(Sampling_period %in% c("MODERN","SMITHSONIAN"))
 
 # Modern first
-ggplot() +
-  geom_point(temp,
-             mapping=aes(x=BC_genetic_cluster_assignment,y=PC1,alpha=Sampling_period,fill=BC_genetic_cluster_assignment),shape=21,color="black",size=15) +
-  scale_x_reverse(expand=c(0,0),name = "STRUCTURE assignment to black-capped cluster") + 
-  scale_y_reverse(expand=c(0,0), name = "PC1 (81.3% variance explained)") +
-  scale_alpha_discrete(range=c(1,0.3)) +
-  scale_fill_gradient2(
-    low = "#15326C", mid = "#9437FF", high="#CE1B26", midpoint = 0.5
-  ) +
-  theme_bw(base_size = 28) +
-  theme(legend.position = "none") +
-  theme(axis.title=element_text(size=36,face="bold")) +
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+#ggplot() +
+#  geom_point(temp,
+#             mapping=aes(x=BC_genetic_cluster_assignment,y=PC1,alpha=Sampling_period,fill=BC_genetic_cluster_assignment),shape=21,color="black",size=15) +
+#  scale_x_reverse(expand=c(0,0),name = "STRUCTURE assignment to black-capped cluster") + 
+#  scale_y_reverse(expand=c(0,0), name = "PC1 (81.3% variance explained)") +
+#  scale_alpha_discrete(range=c(1,0.3)) +
+#  scale_fill_gradient2(
+#    low = "#15326C", mid = "#9437FF", high="#CE1B26", midpoint = 0.5
+#  ) +
+#  theme_bw(base_size = 28) +
+#  theme(legend.position = "none") +
+#  theme(axis.title=element_text(size=36,face="bold")) +
+#  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
 
-ggsave(filename="Fig1_modern_PC1_vs_structure.pdf",plot = last_plot(),width=38,height=35,units="cm")
-
+#ggsave(filename="Fig1_modern_PC1_vs_structure.pdf",plot = last_plot(),width=38,height=35,units="cm")
+#
 # Historical
-ggplot() +
-  geom_point(temp,
-             mapping=aes(x=BC_genetic_cluster_assignment,y=PC1,alpha=Sampling_period,fill=BC_genetic_cluster_assignment),shape=21,color="black",size=15) +
-  scale_x_reverse(expand=c(0,0),name = "STRUCTURE assignment to black-capped cluster") + 
-  scale_y_reverse(expand=c(0,0), name = "PC1 (81.3% variance explained)") +
-  scale_alpha_discrete(range=c(0.3,1)) +
-  scale_fill_gradient2(
-    low = "#15326C", mid = "#9437FF", high="#CE1B26", midpoint = 0.5
-  ) +
-  theme_bw(base_size = 28) +
-  theme(legend.position = "none") +
-  theme(axis.title=element_text(size=36,face="bold")) +
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+#ggplot() +
+#  geom_point(temp,
+#             mapping=aes(x=BC_genetic_cluster_assignment,y=PC1,alpha=Sampling_period,fill=BC_genetic_cluster_assignment),shape=21,color="black",size=15) +
+#  scale_x_reverse(expand=c(0,0),name = "STRUCTURE assignment to black-capped cluster") + 
+#  scale_y_reverse(expand=c(0,0), name = "PC1 (81.3% variance explained)") +
+#  scale_alpha_discrete(range=c(0.3,1)) +
+#  scale_fill_gradient2(
+#    low = "#15326C", mid = "#9437FF", high="#CE1B26", midpoint = 0.5
+#  ) +
+#  theme_bw(base_size = 28) +
+#  theme(legend.position = "none") +
+#  theme(axis.title=element_text(size=36,face="bold")) +
+#  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
 
-ggsave(filename="Fig1_historical_PC1_vs_structure.pdf",plot = last_plot(),width=38,height=35,units="cm")
+#ggsave(filename="Fig1_historical_PC1_vs_structure.pdf",plot = last_plot(),width=38,height=35,units="cm")
 
 sessionInfo()
 #R version 4.2.1 (2022-06-23)
